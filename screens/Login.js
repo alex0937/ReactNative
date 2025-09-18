@@ -99,7 +99,7 @@ export default function Login({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A', // Negro principal para el fondo
+    backgroundColor: '#0A0A0A',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 40,
-    backgroundColor: '#1C1C1C', // Gris oscuro para el encabezado
+    backgroundColor: '#1C1C1C',
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     shadowColor: '#000',
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#30e333ff', // Verde lima vibrante para el nombre
+    color: '#30e333ff',
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: -1, height: 1 },
     textShadowRadius: 10,
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   card: {
     width: '90%',
     maxWidth: 400,
-    backgroundColor: '#1A1A1A', // Un negro ligeramente más claro para la tarjeta
+    backgroundColor: '#1A1A1A',
     borderRadius: 20,
     padding: 30,
     alignItems: 'center',
@@ -146,12 +146,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 8,
-    marginTop: 180, // Ajusta para que la tarjeta no quede debajo del header
+    marginTop: 180,
   },
   title: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: '#30e333ff', // Verde lima para el título
+    color: '#30e333ff',
     marginBottom: 30,
     textTransform: 'uppercase',
   },
@@ -159,20 +159,20 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     fontSize: 15,
     fontWeight: '600',
-    color: '#E0E0E0', // Gris claro para las etiquetas
+    color: '#E0E0E0',
     marginBottom: 8,
     marginTop: 15,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2C2C2C', // Gris oscuro para el fondo del input
+    backgroundColor: '#2C2C2C',
     borderRadius: 10,
     paddingHorizontal: 15,
     marginBottom: 20,
     width: '100%',
     borderWidth: 1,
-    borderColor: '#4A4A4A', // Borde gris más oscuro
+    borderColor: '#4A4A4A',
   },
   icon: {
     marginRight: 12,
@@ -180,19 +180,20 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 50,
-    color: '#FFFFFF', // Texto blanco en el input
+    color: '#FFFFFF',
     fontSize: 16,
   },
   eyeIcon: {
     padding: 8,
   },
   button: {
-    backgroundColor: '#8BC34A', // Un verde más sólido para el botón
+    backgroundColor: '#8BC34A',
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 10,
     marginTop: 30,
-    width: '100%',
+    width: '75%', // Ajuste del ancho del botón a un 85% del contenedor
+    alignSelf: 'center', // Para asegurar que el botón esté centrado en su contenedor
     alignItems: 'center',
     shadowColor: '#8BC34A',
     shadowOffset: { width: 0, height: 5 },
@@ -201,7 +202,7 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   buttonText: {
-    color: '#0A0A0A', // Texto negro en el botón para contraste
+    color: '#0A0A0A',
     fontSize: 18,
     fontWeight: 'bold',
     textTransform: 'uppercase',
@@ -210,11 +211,11 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   signUpText: {
-    color: '#B0B0B0', // Gris medio para el texto de "¿No tienes cuenta?"
+    color: '#B0B0B0',
     fontSize: 15,
   },
   signUpTextBold: {
-    color: '#30e333ff', // Verde lima para "Regístrate aquí"
+    color: '#30e333ff',
     fontWeight: 'bold',
   },
 });
