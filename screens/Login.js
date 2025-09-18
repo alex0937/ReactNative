@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, StatusBar } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, StatusBar, Dimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../src/config/firebaseConfig'; // Asegúrate de que esta ruta sea correcta
+
+// Obtener las dimensiones de la pantalla una vez al inicio
+const { width, height } = Dimensions.get('window');
+const isSmallScreen = width < 375; // Define una condición para pantallas pequeñas
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
@@ -56,7 +60,7 @@ export default function Login({ navigation }) {
 
         <Text style={styles.label}>Correo Electrónico</Text>
         <View style={styles.inputContainer}>
-          <FontAwesome name="envelope" size={18} color="#888" style={styles.icon} />
+          <FontAwesome name="envelope" size={isSmallScreen ? 16 : 18} color="#888" style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="ejemplo@email.com"
@@ -70,7 +74,7 @@ export default function Login({ navigation }) {
 
         <Text style={styles.label}>Contraseña</Text>
         <View style={styles.inputContainer}>
-          <FontAwesome name="lock" size={18} color="#888" style={styles.icon} />
+          <FontAwesome name="lock" size={isSmallScreen ? 16 : 18} color="#888" style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Ingresa tu contraseña"
@@ -80,7 +84,7 @@ export default function Login({ navigation }) {
             secureTextEntry={!showPassword}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-            <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={18} color="#888" />
+            <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={isSmallScreen ? 16 : 18} color="#888" />
           </TouchableOpacity>
         </View>
 
@@ -110,7 +114,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 40,
+    paddingVertical: isSmallScreen ? 30 : 40, // Ajuste para pantallas pequeñas
     backgroundColor: '#1C1C1C',
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
@@ -121,13 +125,13 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   logo: {
-    width: 60,
-    height: 60,
+    width: isSmallScreen ? 50 : 60, // Ajuste del tamaño del logo
+    height: isSmallScreen ? 50 : 60,
     resizeMode: 'contain',
     marginRight: 10,
   },
   appName: {
-    fontSize: 28,
+    fontSize: isSmallScreen ? 24 : 28, // Ajuste del tamaño de la fuente del título
     fontWeight: 'bold',
     color: '#30e333ff',
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
@@ -139,29 +143,29 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     backgroundColor: '#1A1A1A',
     borderRadius: 20,
-    padding: 30,
+    padding: isSmallScreen ? 20 : 30, // Ajuste del padding de la tarjeta
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 8,
-    marginTop: 180,
+    marginTop: isSmallScreen ? 140 : 180, // Ajuste para que la tarjeta no quede debajo del header
   },
   title: {
-    fontSize: 26,
+    fontSize: isSmallScreen ? 22 : 26, // Ajuste del tamaño de la fuente
     fontWeight: 'bold',
     color: '#30e333ff',
-    marginBottom: 30,
+    marginBottom: isSmallScreen ? 20 : 30,
     textTransform: 'uppercase',
   },
   label: {
     alignSelf: 'flex-start',
-    fontSize: 15,
+    fontSize: isSmallScreen ? 14 : 15, // Ajuste del tamaño de la fuente
     fontWeight: '600',
     color: '#E0E0E0',
     marginBottom: 8,
-    marginTop: 15,
+    marginTop: isSmallScreen ? 10 : 15,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -181,7 +185,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 50,
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: isSmallScreen ? 14 : 16, // Ajuste del tamaño de la fuente del input
   },
   eyeIcon: {
     padding: 8,
@@ -192,8 +196,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 10,
     marginTop: 30,
-    width: '75%', // Ajuste del ancho del botón a un 85% del contenedor
-    alignSelf: 'center', // Para asegurar que el botón esté centrado en su contenedor
+    width: '75%',
+    alignSelf: 'center',
     alignItems: 'center',
     shadowColor: '#8BC34A',
     shadowOffset: { width: 0, height: 5 },
@@ -203,7 +207,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#0A0A0A',
-    fontSize: 18,
+    fontSize: isSmallScreen ? 16 : 18, // Ajuste del tamaño de la fuente
     fontWeight: 'bold',
     textTransform: 'uppercase',
   },
@@ -212,7 +216,7 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     color: '#B0B0B0',
-    fontSize: 15,
+    fontSize: isSmallScreen ? 14 : 15, // Ajuste del tamaño de la fuente
   },
   signUpTextBold: {
     color: '#30e333ff',

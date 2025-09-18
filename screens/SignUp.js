@@ -164,7 +164,7 @@ export default function SignUp({ navigation }) {
             <Text style={styles.validationTitle}>La contraseña debe incluir:</Text>
             {renderValidation(hasMinLength, "Más de 6 caracteres")}
             {renderValidation(hasNumber, "Al menos un número")}
-            {renderValidation(hasLetter, "Al menos una letra")}
+            {renderValidation(hasLetter, "Al menos una letra mayúscula")}
           </View>
 
           <Text style={styles.label}>Confirmar Contraseña</Text>
