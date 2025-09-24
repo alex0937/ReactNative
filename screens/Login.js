@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, StatusBar, Dimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, StatusBar, Dimensions, ScrollView } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../src/config/firebaseConfig'; // Asegúrate de que esta ruta sea correcta
@@ -49,60 +49,67 @@ export default function Login({ navigation }) {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={styles.header.backgroundColor} />
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <View style={styles.header}>
+            <Image source={require('../assets/logo-gym.png.png')} style={styles.logo} />
+            <Text style={styles.appName}>ADN-FIT GYM</Text>
+          </View>
+          <View style={styles.card}>
+          <Text style={styles.title}>INICIAR SESIÓN</Text>
 
-      <View style={styles.header}>
-        <Image source={require('../assets/logo-gym.png.png')} style={styles.logo} />
-        <Text style={styles.appName}>ADN-FIT GYM</Text>
-      </View>
+          <Text style={styles.label}>Correo Electrónico</Text>
+          <View style={styles.inputContainer}>
+            <FontAwesome name="envelope" size={isSmallScreen ? 16 : 18} color="#888" style={styles.icon} />
+            <TextInput
+              style={styles.input}
+              placeholder="ejemplo@email.com"
+              placeholderTextColor="#888"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
 
-      <View style={styles.card}>
-        <Text style={styles.title}>INICIAR SESIÓN</Text>
+          <Text style={styles.label}>Contraseña</Text>
+          <View style={styles.inputContainer}>
+            <FontAwesome name="lock" size={isSmallScreen ? 16 : 18} color="#888" style={styles.icon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Ingresa tu contraseña"
+              placeholderTextColor="#888"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+              <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={isSmallScreen ? 16 : 18} color="#888" />
+            </TouchableOpacity>
+          </View>
 
-        <Text style={styles.label}>Correo Electrónico</Text>
-        <View style={styles.inputContainer}>
-          <FontAwesome name="envelope" size={isSmallScreen ? 16 : 18} color="#888" style={styles.icon} />
-          <TextInput
-            style={styles.input}
-            placeholder="ejemplo@email.com"
-            placeholderTextColor="#888"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-        </View>
-
-        <Text style={styles.label}>Contraseña</Text>
-        <View style={styles.inputContainer}>
-          <FontAwesome name="lock" size={isSmallScreen ? 16 : 18} color="#888" style={styles.icon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Ingresa tu contraseña"
-            placeholderTextColor="#888"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry={!showPassword}
-          />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-            <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={isSmallScreen ? 16 : 18} color="#888" />
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>INGRESAR</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => navigation.navigate('SignUp')} style={styles.signUpLink}>
+            <Text style={styles.signUpText}>¿No tienes cuenta? <Text style={styles.signUpTextBold}>Regístrate aquí</Text></Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')} style={{ marginTop: 15 }}>
+            <Text style={{ color: '#30e333ff', fontWeight: 'bold', textAlign: 'center' }}>
+              ¿Olvidaste tu contraseña?
+            </Text>
+          </TouchableOpacity>
+          
         </View>
-
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>INGRESAR</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => navigation.navigate('SignUp')} style={styles.signUpLink}>
-          <Text style={styles.signUpText}>¿No tienes cuenta? <Text style={styles.signUpTextBold}>Regístrate aquí</Text></Text>
-        </TouchableOpacity>
-      </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 2,
     backgroundColor: '#0A0A0A',
     alignItems: 'center',
     justifyContent: 'center',
@@ -139,7 +146,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 10,
   },
   card: {
-    width: '90%',
+    width: '100%',
     maxWidth: 400,
     backgroundColor: '#1A1A1A',
     borderRadius: 20,
@@ -171,32 +178,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#2C2C2C',
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    marginBottom: 20,
+    borderRadius: 12,
+    paddingHorizontal: 18,
+    marginBottom: 22,
     width: '100%',
     borderWidth: 1,
     borderColor: '#4A4A4A',
+    minHeight: 54,
   },
   icon: {
     marginRight: 12,
   },
   input: {
     flex: 1,
-    height: 50,
+    height: 54,
     color: '#FFFFFF',
-    fontSize: isSmallScreen ? 14 : 16, // Ajuste del tamaño de la fuente del input
+    fontSize: isSmallScreen ? 15 : 17, // Ajuste del tamaño de la fuente del input
   },
   eyeIcon: {
     padding: 8,
   },
   button: {
-    backgroundColor: '#8BC34A',
+    backgroundColor: '#30e333ff',
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 10,
-    marginTop: 30,
-    width: '75%',
+    marginTop: 32,
+    width: '80%',
+    maxWidth: 260,
     alignSelf: 'center',
     alignItems: 'center',
     shadowColor: '#8BC34A',

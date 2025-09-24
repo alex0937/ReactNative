@@ -21,9 +21,9 @@ export default function SignUp({ navigation }) {
   const handlePasswordChange = (text) => {
     setPassword(text);
     // Actualizar los estados de validación en tiempo real
-    setHasMinLength(text.length > 10);
-    setHasNumber(/[0-9]/.test(text));
-    setHasLetter(/[a-zA-Z]/.test(text));
+    setHasMinLength(text.length > 6 && text.length > 0); // Maximo 6 caracteres y al menos 1 
+    setHasNumber(/[0-9]/.test(text)); // Al menos un número
+    setHasLetter(/[a-zA-Z]/.test(text)); // Al menos una letra mayúscula
   };
 
   const handleSignUp = async () => {
@@ -38,7 +38,7 @@ export default function SignUp({ navigation }) {
     }
 
     // Validar las nuevas condiciones de contraseña
-    if (password.length <= 10) {
+    if (password.length > 6) {
       Alert.alert("Contraseña Inválida", "La contraseña debe tener más de 10 caracteres.");
       return;
     }
@@ -47,7 +47,7 @@ export default function SignUp({ navigation }) {
       return;
     }
     if (!/[a-zA-Z]/.test(password)) {
-      Alert.alert("Contraseña Inválida", "La contraseña debe contener al menos una letra.");
+      Alert.alert("Contraseña Inválida", "La contraseña debe contener al menos una letra mayúscula.");
       return;
     }
 
@@ -213,10 +213,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 40,
+    paddingVertical: 5, // Ajuste del padding vertical
     backgroundColor: '#1C1C1C',
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -224,13 +224,13 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   logo: {
-    width: 60,
-    height: 60,
+    width: 100,
+    height: 100,
     resizeMode: 'contain',
-    marginRight: 10,
+    marginRight: 2,
   },
   appName: {
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#30e333ff',
     textShadowColor: 'rgba(0, 0, 0, 0.75)',

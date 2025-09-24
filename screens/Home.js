@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Image, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Image, StatusBar, ScrollView } from 'react-native';
 import { signOut } from 'firebase/auth';
-import { auth } from '../src/config/firebaseConfig'; // Asegúrate de que esta ruta sea correcta
+import { auth } from '../src/config/firebaseConfig';
 
 export default function Home({ navigation }) {
 
@@ -18,19 +18,19 @@ export default function Home({ navigation }) {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#0A0A0A" />
-
       <View style={styles.header}>
         <Image source={require('../assets/logo-gym.png.png')} style={styles.logo} />
         <Text style={styles.appName}>ADN-FIT GYM</Text>
       </View>
-
-      <View style={styles.content}>
-        <Text style={styles.welcomeText}>¡Bienvenido!</Text>
-        <Text style={styles.subtitle}>Tu camino hacia el bienestar comienza aquí.</Text>
-        <TouchableOpacity style={styles.button} onPress={handleLogOut}>
-          <Text style={styles.buttonText}>CERRAR SESIÓN</Text>
-        </TouchableOpacity>
-      </View>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.content}>
+          <Text style={styles.welcomeText}>¡Bienvenido!</Text>
+          <Text style={styles.subtitle}>Tu camino hacia el bienestar comienza aquí.</Text>
+          <TouchableOpacity style={styles.button} onPress={handleLogOut}>
+            <Text style={styles.buttonText}>CERRAR SESIÓN</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -38,7 +38,7 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A', // Negro principal para el fondo
+    backgroundColor: '#0A0A0A',
     alignItems: 'center',
   },
   header: {
@@ -46,8 +46,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 40,
-    backgroundColor: '#1C1C1C', // Gris oscuro para el encabezado
+    paddingVertical: 14, // Más delgado
+    backgroundColor: '#1C1C1C',
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     shadowColor: '#000',
@@ -57,18 +57,23 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   logo: {
-    width: 60,
-    height: 60,
+    width: 44,
+    height: 44,
     resizeMode: 'contain',
-    marginRight: 10,
+    marginRight: 8,
   },
   appName: {
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#30e333ff', // Verde lima vibrante para el nombre
+    color: '#30e333ff',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
   },
   content: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
@@ -77,21 +82,20 @@ const styles = StyleSheet.create({
   welcomeText: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#30e333ff', // Verde lima para el texto de bienvenida
+    color: '#30e333ff',
     marginBottom: 10,
     textTransform: 'uppercase',
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 18,
-    color: '#B0B0B0', // Gris para el subtítulo
+    color: '#B0B0B0',
     textAlign: 'center',
     marginBottom: 50,
   },
   button: {
-    backgroundColor: '#8BC34A', // Un verde más sólido para el botón
+    backgroundColor: '#8BC34A',
     paddingVertical: 15,
-    paddingHorizontal: 40,
     borderRadius: 10,
     width: '80%',
     maxWidth: 300,
@@ -103,7 +107,7 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   buttonText: {
-    color: '#0A0A0A', // Texto negro en el botón para contraste
+    color: '#0A0A0A',
     fontSize: 18,
     fontWeight: 'bold',
     textTransform: 'uppercase',
