@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, StatusBar, Dimensions, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, StatusBar, ScrollView } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../src/config/firebaseConfig'; // Asegúrate de que esta ruta sea correcta
-
-// Obtener las dimensiones de la pantalla una vez al inicio
-const { width, height } = Dimensions.get('window');
-const isSmallScreen = width < 375; // Define una condición para pantallas pequeñas
+import { auth } from '../src/config/firebaseConfig';
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
@@ -48,18 +44,15 @@ export default function Login({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={styles.header.backgroundColor} />
-      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <View style={styles.header}>
-            <Image source={require('../assets/logo-gym.png.png')} style={styles.logo} />
-            <Text style={styles.appName}>ADN-FIT GYM</Text>
-          </View>
-          <View style={styles.card}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f4f2f2ff" />
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <View style={styles.card}>
+          <Image source={require('../assets/logo-gym.png.png')} style={styles.logo} />
           <Text style={styles.title}>INICIAR SESIÓN</Text>
 
           <Text style={styles.label}>Correo Electrónico</Text>
           <View style={styles.inputContainer}>
-            <FontAwesome name="envelope" size={isSmallScreen ? 16 : 18} color="#888" style={styles.icon} />
+            <FontAwesome name="envelope" size={18} color="#19d44c" style={styles.icon} />
             <TextInput
               style={styles.input}
               placeholder="ejemplo@email.com"
@@ -73,7 +66,7 @@ export default function Login({ navigation }) {
 
           <Text style={styles.label}>Contraseña</Text>
           <View style={styles.inputContainer}>
-            <FontAwesome name="lock" size={isSmallScreen ? 16 : 18} color="#888" style={styles.icon} />
+            <FontAwesome name="lock" size={18} color="#19d44c" style={styles.icon} />
             <TextInput
               style={styles.input}
               placeholder="Ingresa tu contraseña"
@@ -81,26 +74,25 @@ export default function Login({ navigation }) {
               value={password}
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
+              autoCapitalize="none"
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-              <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={isSmallScreen ? 16 : 18} color="#888" />
+              <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={18} color="#888" />
             </TouchableOpacity>
           </View>
-
+          
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>INGRESAR</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => navigation.navigate('SignUp')} style={styles.signUpLink}>
-            <Text style={styles.signUpText}>¿No tienes cuenta? <Text style={styles.signUpTextBold}>Regístrate aquí</Text></Text>
+          <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+            <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')} style={{ marginTop: 15 }}>
-            <Text style={{ color: '#30e333ff', fontWeight: 'bold', textAlign: 'center' }}>
-              ¿Olvidaste tu contraseña?
+          <TouchableOpacity onPress={() => navigation.navigate('SignUp')} style={styles.signUpLink}>
+            <Text style={styles.signUpText}>
+              ¿No tienes cuenta? <Text style={styles.signUpTextBold}>Regístrate aquí</Text>
             </Text>
           </TouchableOpacity>
-          
+
         </View>
       </ScrollView>
     </View>
@@ -109,126 +101,112 @@ export default function Login({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 2,
-    backgroundColor: '#0A0A0A',
-    alignItems: 'center',
+    flex: 1,
+    backgroundColor: '#f4f2f2ff',
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
-  },
-  header: {
-    position: 'absolute',
-    top: 0,
-    width: '100%',
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: isSmallScreen ? 30 : 40, // Ajuste para pantallas pequeñas
-    backgroundColor: '#1C1C1C',
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  logo: {
-    width: isSmallScreen ? 50 : 60, // Ajuste del tamaño del logo
-    height: isSmallScreen ? 50 : 60,
-    resizeMode: 'contain',
-    marginRight: 10,
-  },
-  appName: {
-    fontSize: isSmallScreen ? 24 : 28, // Ajuste del tamaño de la fuente del título
-    fontWeight: 'bold',
-    color: '#30e333ff',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
+    paddingVertical: 24,
   },
   card: {
-    width: '100%',
-    maxWidth: 400,
-    backgroundColor: '#1A1A1A',
-    borderRadius: 20,
-    padding: isSmallScreen ? 20 : 30, // Ajuste del padding de la tarjeta
+    width: 340,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 24,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 8,
-    marginTop: isSmallScreen ? 140 : 180, // Ajuste para que la tarjeta no quede debajo del header
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
   },
   title: {
-    fontSize: isSmallScreen ? 22 : 26, // Ajuste del tamaño de la fuente
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#30e333ff',
-    marginBottom: isSmallScreen ? 20 : 30,
+    color: '#19d44c',
+    marginBottom: 18,
+    textAlign: 'center',
     textTransform: 'uppercase',
+  },
+  logo: {
+    width: 180,
+    height: 150,
+    resizeMode: 'contain',
+    marginBottom: 18,
+    marginTop: 4,
   },
   label: {
     alignSelf: 'flex-start',
-    fontSize: isSmallScreen ? 14 : 15, // Ajuste del tamaño de la fuente
+    fontSize: 15,
     fontWeight: '600',
-    color: '#E0E0E0',
-    marginBottom: 8,
-    marginTop: isSmallScreen ? 10 : 15,
+    color: '#222',
+    marginBottom: 6,
+    marginTop: 10,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2C2C2C',
-    borderRadius: 12,
-    paddingHorizontal: 18,
-    marginBottom: 22,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#19d44c',
+    paddingHorizontal: 12,
+    marginBottom: 8,
     width: '100%',
-    borderWidth: 1,
-    borderColor: '#4A4A4A',
-    minHeight: 54,
   },
   icon: {
-    marginRight: 12,
+    marginRight: 8,
   },
   input: {
     flex: 1,
-    height: 54,
-    color: '#FFFFFF',
-    fontSize: isSmallScreen ? 15 : 17, // Ajuste del tamaño de la fuente del input
+    height: 44,
+    color: '#222',
+    fontSize: 15,
+    backgroundColor: '#fff',
   },
   eyeIcon: {
     padding: 8,
   },
   button: {
-    backgroundColor: '#30e333ff',
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 10,
-    marginTop: 32,
-    width: '80%',
-    maxWidth: 260,
-    alignSelf: 'center',
+    backgroundColor: '#19d44c',
+    borderRadius: 8,
+    width: '100%',
+    paddingVertical: 13,
     alignItems: 'center',
-    shadowColor: '#8BC34A',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    shadowColor: '#19d44c',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 2,
   },
   buttonText: {
-    color: '#0A0A0A',
-    fontSize: isSmallScreen ? 16 : 18, // Ajuste del tamaño de la fuente
+    color: '#fff',
     fontWeight: 'bold',
+    fontSize: 16,
     textTransform: 'uppercase',
   },
+  forgotText: {
+    color: '#888',
+    fontSize: 14,
+    marginTop: 2,
+    marginBottom: 10,
+    textAlign: 'center',
+    textDecorationLine: 'underline',
+  },
   signUpLink: {
-    marginTop: 30,
+    marginTop: 8,
   },
   signUpText: {
-    color: '#B0B0B0',
-    fontSize: isSmallScreen ? 14 : 15, // Ajuste del tamaño de la fuente
+    color: '#888',
+    fontSize: 14,
+    textAlign: 'center',
   },
   signUpTextBold: {
-    color: '#30e333ff',
+    color: '#19d44c',
     fontWeight: 'bold',
   },
 });
