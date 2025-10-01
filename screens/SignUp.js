@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, StatusBar, ScrollView, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { auth } from '../src/config/firebaseConfig';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import CustomAlertModal from '../components/CostomAlertModal';
 
 export default function SignUp({ navigation }) {
   const [firstName, setFirstName] = useState('');
@@ -20,39 +21,65 @@ export default function SignUp({ navigation }) {
 
   const handlePasswordChange = (text) => {
     setPassword(text);
+    //Valida en tiempo real
     setHasMinLength(text.length > 6);
     setHasNumber(/[0-9]/.test(text));
     setHasUppercase(/[A-Z]/.test(text));
   };
 
+  const showAlert = (title, message) => {
+  if (Platform.OS === 'web') {
+  window.alert(`${title}\n${message}`);
+  } else {
+    Alert.alert(title, message);
+  }
+};
+
+// Estados para alertas
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState('info');
+
+  const showCustomAlert = (title, message, type = 'info') => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertType(type);
+    setAlertVisible(true);
+  };
+  const closeCustomAlert = () => {
+    setAlertVisible(false);
+  };
+
   const handleSignUp = async () => {
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      Alert.alert("Error de Registro", "Todos los campos son obligatorios.");
+      showCustomAlert("Error de Registro", "Todos los campos son obligatorios.");
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert("Error de Contraseña", "Las contraseñas no coinciden.");
+      showCustomAlert("Error de Contraseña", "Las contraseñas no coinciden.");
       return;
     }
     if (password.length <= 6) {
-      Alert.alert("Contraseña Inválida", "La contraseña debe tener más de 6 caracteres.");
+     showCustomAlert("Contraseña Inválida", "La contraseña debe tener más de 6 caracteres.");
       return;
     }
     if (!/[0-9]/.test(password)) {
-      Alert.alert("Contraseña Inválida", "La contraseña debe contener al menos un número.");
+     showCustomAlert("Contraseña Inválida", "La contraseña debe contener al menos un número.");
       return;
     }
     if (!/[A-Z]/.test(password)) {
-      Alert.alert("Contraseña Inválida", "La contraseña debe contener al menos una letra mayúscula.");
+     showCustomAlert("Contraseña Inválida", "La contraseña debe contener al menos una letra mayúscula.");
       return;
     }
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
       //Guarda el nombre como displayName
       await updateProfile (userCredential.user,{
         displayName: firstName
       });
-      Alert.alert("¡Registro Exitoso!", "Tu cuenta ha sido creada. ¡Bienvenido a ADN-FIT GYM!");
+      showCustomAlert("¡Registro Exitoso!", "Tu cuenta ha sido creada. ¡Bienvenido a ADN-FIT GYM!");
       navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
     } catch (error) {
       let errorMessage = "Hubo un problema al registrar el usuario. Por favor, intenta de nuevo.";
@@ -74,7 +101,7 @@ export default function SignUp({ navigation }) {
           break;
 
       }
-      Alert.alert("Error al Registrar", errorMessage);
+      showCustomAlert("Error al Registrar", errorMessage);
     }
   };
 
@@ -93,6 +120,10 @@ export default function SignUp({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.card}>
           <Text style={styles.title}>CREAR CUENTA</Text>
@@ -183,8 +214,16 @@ export default function SignUp({ navigation }) {
               ¿Ya tienes cuenta? <Text style={styles.loginTextBold}>Inicia sesión</Text>
             </Text>
           </TouchableOpacity>
+        <CustomAlertModal
+        visible={alertVisible}
+        title={alertTitle}
+        message={alertMessage}
+        onClose={closeCustomAlert}
+        type={alertType}
+      />
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -277,9 +316,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   button: {
-    backgroundColor: '#19d44c',
+    backgroundColor: '#1afa56ff',
     borderRadius: 8,
-    width: '100%',
+    width: '70%',
     paddingVertical: 13,
     alignItems: 'center',
     marginTop: 10,
@@ -291,7 +330,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   buttonText: {
-    color: '#fff',
+    color: '#000000ff',
     fontWeight: 'bold',
     fontSize: 16,
     textTransform: 'uppercase',

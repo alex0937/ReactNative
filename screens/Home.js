@@ -4,32 +4,44 @@ import { FontAwesome5, MaterialIcons, MaterialCommunityIcons, Ionicons } from '@
 import { signOut } from 'firebase/auth';
 import { Alert } from 'react-native';
 import { auth } from '../src/config/firebaseConfig';
+import CustomAlertModal from '../components/CostomAlertModal';
 
 export default function Home({ navigation }) {
   const [userName, setUserName] = useState ('');
   
-const handleLogOut = async () => {
-  try {
-    await signOut(auth);
-    // Puedes usar Alert.alert en móvil y window.alert en web
-    if (typeof window !== 'undefined') {
-      window.alert("Sesión cerrada correctamente.");
-    } else {
-      Alert.alert("Sesión cerrada correctamente.");
+  // Estados para alerta personalizada
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState('info');
+
+  const showCustomAlert = (title, message, type = "info") => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertType(type);
+    setAlertVisible(true);
+  };
+
+  const closeCustomAlert = () => {
+    setAlertVisible(false);
+  };
+
+ const handleLogOut = async () => {
+    try {
+      await signOut(auth);
+      showCustomAlert("Sesión cerrada correctamente.", "", "success");
+      navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+    } catch (error) {
+      showCustomAlert("No se pudo cerrar la sesión. Intenta de nuevo.", "", "error");
+      console.log("No se pudo cerrar la sesión:", error);
     }
-    navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
-  } catch (error) {
-    if (typeof window !== 'undefined') {
-      window.alert("No se pudo cerrar la sesión. Intenta de nuevo.");
-    } else {
-      Alert.alert("No se pudo cerrar la sesión. Intenta de nuevo.");
-    }
-  }
-};
+  };
+
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f4f2f2ff" />
+
       {/* Barra superior de bienvenida */}
       <View style={styles.header}>
         <Text style={styles.headerText}>
@@ -41,6 +53,7 @@ const handleLogOut = async () => {
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+
         {/* Accesos rápidos */}
         <View style={styles.quickAccessRow}>
           <TouchableOpacity style={styles.quickCard}>
@@ -105,6 +118,13 @@ const handleLogOut = async () => {
           <Text style={styles.logoutText}>CERRAR SESIÓN</Text>
         </TouchableOpacity>
       </ScrollView>
+      <CustomAlertModal
+        visible={alertVisible}
+        title={alertTitle}
+        message={alertMessage}
+        onClose={closeCustomAlert}
+        type={alertType}
+      />
     </View>
   );
 }
@@ -250,11 +270,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     height: 70,
     marginBottom: 6,
-    marginTop: 2,
+    marginTop: 1,
     justifyContent: 'center'
   },
   bar: {
-    width: 18,
+    width: 19,
     marginHorizontal: 4,
     borderRadius: 4,
   },
@@ -274,7 +294,7 @@ const styles = StyleSheet.create({
   logoutButton: {
     backgroundColor: GREEN,
     borderRadius: 8,
-    width: 340,
+    width: 270,
     paddingVertical: 13,
     alignItems: 'center',
     marginTop: 10,
@@ -286,7 +306,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   logoutText: {
-    color: '#fff',
+    color: '#080808ff',
     fontWeight: 'bold',
     fontSize: 16,
     textTransform: 'uppercase',

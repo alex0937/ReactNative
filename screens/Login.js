@@ -1,23 +1,51 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, StatusBar, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, StatusBar, ScrollView, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../src/config/firebaseConfig';
+import CustomAlertModal from '../components/CostomAlertModal';
+
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  const isWeb = Platform.OS === 'web';
+
+  const showAlert = (title, message) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}\n${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };  
+
+    // Estados para controlar alerta
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState('info');
+
+  const showCustomAlert = (title, message, type = 'info') => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertType(type);
+    setAlertVisible(true);
+  };
+  const closeCustomAlert = () => {
+    setAlertVisible(false);
+  };
+
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Error de Inicio de Sesión", "Por favor ingresa tu correo y contraseña.");
+      showCustomAlert("Error de Inicio de Sesión", "Por favor ingresa tu correo y contraseña.");
       return;
     }
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      Alert.alert("¡Bienvenido a ADN-FIT GYM!", "Has iniciado sesión exitosamente.");
+      showCustomAlert("¡Bienvenido a ADN-FIT GYM!", "Has iniciado sesión exitosamente.");
       navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
     } catch (error) {
       let errorMessage = "Hubo un problema al iniciar sesión. Intenta de nuevo.";
@@ -38,13 +66,18 @@ export default function Login({ navigation }) {
           errorMessage = "Error desconocido. Por favor, contacta a soporte.";
           break;
       }
-      Alert.alert("Error al Iniciar Sesión", errorMessage);
+      showCustomAlert("Error al Iniciar Sesión", errorMessage);
     }
   };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f4f2f2ff" />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.card}>
           <Image source={require('../assets/logo-gym.png.png')} style={styles.logo} />
@@ -80,7 +113,7 @@ export default function Login({ navigation }) {
               <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={18} color="#888" />
             </TouchableOpacity>
           </View>
-          
+
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>INGRESAR</Text>
           </TouchableOpacity>
@@ -92,9 +125,17 @@ export default function Login({ navigation }) {
               ¿No tienes cuenta? <Text style={styles.signUpTextBold}>Regístrate aquí</Text>
             </Text>
           </TouchableOpacity>
+          <CustomAlertModal
+        visible={alertVisible}
+        title={alertTitle}
+        message={alertMessage}
+        onClose={closeCustomAlert}
+        type={alertType}
+        />
 
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -162,7 +203,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 44,
-    color: '#222',
+    color: '#3e3737ff',
     fontSize: 15,
     backgroundColor: '#fff',
   },
@@ -170,9 +211,9 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   button: {
-    backgroundColor: '#19d44c',
+    backgroundColor: '#1afa56ff',
     borderRadius: 8,
-    width: '100%',
+    width: '70%',
     paddingVertical: 13,
     alignItems: 'center',
     marginTop: 10,
@@ -184,7 +225,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   buttonText: {
-    color: '#fff',
+    color: '#090909ff',
     fontWeight: 'bold',
     fontSize: 16,
     textTransform: 'uppercase',

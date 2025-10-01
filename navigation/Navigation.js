@@ -29,15 +29,15 @@ function Navigation() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName={isAuthenticated ? "Home" : "Login"}
         screenOptions={{
-          headerStyle: { backgroundColor: '#0A0A0A' }, //Cambia aqui el color del header
+          headerStyle: { backgroundColor: '#ffffffff' }, //Cambia aqui el color del header
           headerTintColor: '#30e33ff', // Cambia aqui el color del texto del header
           headerTitleStyle: { fontWeight: 'bold' },
         }}
       >
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="SignUp" component={SignUp} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}  />
+        <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }}  />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }}  />
+        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}  />
       </Stack.Navigator>
     </NavigationContainer>
   );

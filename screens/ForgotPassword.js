@@ -3,19 +3,32 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, StatusBar, 
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../src/config/firebaseConfig';
 import { FontAwesome } from '@expo/vector-icons';
-
+import CustomAlertModal from '../components/CostomAlertModal';
 
 export default function ForgotPassword({ navigation }) {
   const [email, setEmail] = useState('');
 
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState('info');
+
+  const showCustomAlert = (title, message, type = "info") => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertType(type);
+    setAlertVisible(true);
+  };
+  const closeCustomAlert = () => setAlertVisible(false);
+
   const handleResetPassword = async () => {
     if (!email) {
-      Alert.alert('Error', 'Por favor ingresa tu correo electrónico.');
+      showCustomAlert('Error', 'Por favor ingresa tu correo electrónico.');
       return;
     }
     try {
       await sendPasswordResetEmail(auth, email);
-      Alert.alert('Éxito', 'Se ha enviado un correo para restablecer tu contraseña.');
+      showCustomAlert('Éxito', 'Se ha enviado un correo para restablecer tu contraseña.');
       navigation.goBack();
     } catch (error) {
       let errorMessage = 'Ocurrió un error. Intenta de nuevo.';
@@ -24,7 +37,7 @@ export default function ForgotPassword({ navigation }) {
       } else if (error.code === 'auth/invalid-email') {
         errorMessage = 'El correo electrónico no es válido.';
       }
-      Alert.alert('Error', errorMessage);
+     showCustomAlert('Error', errorMessage);
     }
   };
 
@@ -56,6 +69,13 @@ export default function ForgotPassword({ navigation }) {
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backLink}>
             <Text style={styles.backText}>Volver al inicio de sesión</Text>
           </TouchableOpacity>
+          <CustomAlertModal
+        visible={alertVisible}
+        title={alertTitle}
+        message={alertMessage}
+        onClose={closeCustomAlert}
+        type={alertType}
+        />
         </View>
       </ScrollView>
     </View>
@@ -129,9 +149,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   button: {
-    backgroundColor: '#19d44c',
+    backgroundColor: '#1afa56ff',
     borderRadius: 8,
-    width: '100%',
+    width: '70%',
     paddingVertical: 13,
     alignItems: 'center',
     marginTop: 10,
@@ -143,7 +163,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   buttonText: {
-    color: '#fff',
+    color: '#090909ff',
     fontWeight: 'bold',
     fontSize: 16,
     textTransform: 'uppercase',
