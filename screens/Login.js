@@ -31,11 +31,20 @@ export default function Login({ navigation }) {
     setter(filteredText);
   };
 
+  const validateEmail = (email) => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+};
+
   const handleLogin = async () => {
     if (!email || !password) {
       showCustomAlert("⚠️Error ", "Por favor ingresa tu correo y contraseña.");
       return;
     }
+    if (!validateEmail(email)) {
+  showCustomAlert("⚠️Correo Inválido", "Por favor ingresa un correo electrónico válido.", "error");
+  return;
+  }
     try {
       await signInWithEmailAndPassword(auth, email, password);
       showCustomAlert("¡Bienvenido a ADN-FIT GYM!", "Has iniciado sesión exitosamente.");
@@ -56,10 +65,10 @@ export default function Login({ navigation }) {
           errorMessage = "Problema de conexión a internet. Verifica tu red.";
           break;
         default:
-          errorMessage = "La contraseña es incorrecta.";
+          errorMessage = "El correo no se encuentra asociado al gimnasio.";
           break;
       }
-      showCustomAlert("⚠️Error", errorMessage);
+      showCustomAlert("⚠️Error", errorMessage, "error");
     }
   };
 
