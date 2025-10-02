@@ -29,8 +29,8 @@ function Navigation() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName={isAuthenticated ? "Home" : "Login"}
         screenOptions={{
-          headerStyle: { backgroundColor: '#ffffffff' }, //Cambia aqui el color del header
-          headerTintColor: '#30e33ff', // Cambia aqui el color del texto del header
+          headerStyle: { backgroundColor: '#ffffffff' }, //Cambia el color del header
+          headerTintColor: '#30e33ff', // Cambia el color del texto del header
           headerTitleStyle: { fontWeight: 'bold' },
         }}
       >

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, StatusBar, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, StatusBar, ScrollView, Platform, ImageBackground} from 'react-native';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../src/config/firebaseConfig';
 import { FontAwesome } from '@expo/vector-icons';
@@ -23,12 +23,12 @@ export default function ForgotPassword({ navigation }) {
 
   const handleResetPassword = async () => {
     if (!email) {
-      showCustomAlert('Error', 'Por favor ingresa tu correo electrónico.');
+      showCustomAlert('⚠️Error', 'Por favor ingresa tu correo electrónico.');
       return;
     }
     try {
       await sendPasswordResetEmail(auth, email);
-      showCustomAlert('Éxito', 'Se ha enviado un correo para restablecer tu contraseña.');
+      showCustomAlert('Éxito✅', 'Se ha enviado un correo para restablecer tu contraseña.');
       navigation.goBack();
     } catch (error) {
       let errorMessage = 'Ocurrió un error. Intenta de nuevo.';
@@ -37,11 +37,17 @@ export default function ForgotPassword({ navigation }) {
       } else if (error.code === 'auth/invalid-email') {
         errorMessage = 'El correo electrónico no es válido.';
       }
-     showCustomAlert('Error', errorMessage);
+     showCustomAlert('⚠️Error', errorMessage);
     }
   };
 
-  return (
+  return (   
+     <ImageBackground
+            source={require('../assets/fondo-gymdos.png')} // 👈 usa el fondo que me pasaste
+            style={styles.background}
+            imageStyle={styles.backgroundImage}
+            resizeMode= "cover" // se adapta a toda la pantalla
+          >
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f4f2f2ff" />
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
@@ -79,13 +85,27 @@ export default function ForgotPassword({ navigation }) {
         </View>
       </ScrollView>
     </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    backgroundColor: '#f4f2f2ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+  },
+  backgroundImage: {
+    opacity: 0.9, // menos transparente → más fuerte
+  },
+  overlay: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0)', // capa clara semitransparente sobre el fondo
   },
   scrollContent: {
     flexGrow: 1,
