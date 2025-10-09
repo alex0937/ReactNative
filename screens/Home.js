@@ -1,123 +1,150 @@
-import React, {useState, useEffect} from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, StatusBar, ScrollView } from 'react-native';
+import React from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  StatusBar,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
 import { FontAwesome5, MaterialIcons, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { signOut } from 'firebase/auth';
-import { Alert } from 'react-native';
 import { auth } from '../src/config/firebaseConfig';
+import { useAuth } from '../src/hooks/useAuth';
 import CustomAlertModal from '../components/CostomAlertModal';
+import { COLORS, SPACING } from '../src/theme';
 
 export default function Home({ navigation }) {
-  const [userName, setUserName] = useState ('');
-  
-  // Estados para alerta personalizada
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [alertTitle, setAlertTitle] = useState('');
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState('info');
+  const { user, loading } = useAuth();
 
-  const showCustomAlert = (title, message, type = "info") => {
+  const [alertVisible, setAlertVisible] = React.useState(false);
+  const [alertTitle, setAlertTitle] = React.useState('');
+  const [alertMessage, setAlertMessage] = React.useState('');
+  const [alertType, setAlertType] = React.useState('info');
+
+  const showCustomAlert = (title, message, type = 'info') => {
     setAlertTitle(title);
     setAlertMessage(message);
     setAlertType(type);
     setAlertVisible(true);
   };
 
-  const closeCustomAlert = () => {
-    setAlertVisible(false);
-  };
+  const closeCustomAlert = () => setAlertVisible(false);
 
- const handleLogOut = async () => {
+  const handleLogOut = async () => {
     try {
       await signOut(auth);
-      showCustomAlert("Sesión cerrada correctamente.", "", "success");
-      navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+      showCustomAlert('Sesión cerrada correctamente.', '', 'success');
+      setTimeout(
+        () => navigation.reset({ index: 0, routes: [{ name: 'Login' }] }),
+        600
+      );
     } catch (error) {
-      showCustomAlert("No se pudo cerrar la sesión. Intenta de nuevo.", "", "error");
-      console.log("No se pudo cerrar la sesión:", error);
+      showCustomAlert('No se pudo cerrar la sesión. Intenta de nuevo.', '', 'error');
+      console.log(error);
     }
   };
 
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
+
+  const userName = user?.displayName ?? user?.email?.split('@')[0] ?? '';
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f4f2f2ff" />
+      <StatusBar barStyle="dark-content" backgroundColor={COLORS.bg} />
 
-      {/* Barra superior de bienvenida */}
+      {/* Header con Bienvenido + logo centrado + Cerrar a la derecha */}
       <View style={styles.header}>
-        <Text style={styles.headerText}>
-          {userName ? `Bienvenido ${userName}` : 'Bienvenido'}
-        </Text>
-        <View style={styles.headerIcons}>
-          <Ionicons name="notifications-outline" size={22} color="#222" style={{marginRight: 10}} />
-          <Image source={require('../assets/logo-gym.png.png')} style={styles.avatar} />
-        </View>
-      </View>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.headerText}>{userName ? `Bienvenido ${userName}` : 'Bienvenido'}</Text>
 
-        {/* Accesos rápidos */}
+        {/* Logo centrado */}
+        <TouchableOpacity activeOpacity={0.8}>
+          <Image source={require('../assets/logo-gym.png')} style={styles.avatarCenter} />
+        </TouchableOpacity>
+
+        {/* Cerrar sesión pegado a la derecha */}
+        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogOut}>
+          <Ionicons name="log-out-outline" size={20} color={COLORS.primary} />
+          <Text style={styles.logoutTxt}>Cerrar sesión</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Quick access */}
         <View style={styles.quickAccessRow}>
-          <TouchableOpacity style={styles.quickCard}>
-            <FontAwesome5 name="user-plus" size={32} color="#19d44c" />
+          <TouchableOpacity activeOpacity={0.85} style={styles.quickCard}>
+            <FontAwesome5 name="user-plus" size={32} color={COLORS.primary} />
             <Text style={styles.quickTitle}>Socios</Text>
             <Text style={styles.quickDesc}>Gestión de socios</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.quickCard}>
-            <MaterialIcons name="event-available" size={32} color="#19d44c" />
+
+          <TouchableOpacity activeOpacity={0.85} style={styles.quickCard}>
+            <MaterialIcons name="event-available" size={32} color={COLORS.primary} />
             <Text style={styles.quickTitle}>Agregar un Turno</Text>
             <Text style={styles.quickDesc}>Asignación de clases</Text>
           </TouchableOpacity>
         </View>
+
         <View style={styles.quickAccessRow}>
-          <TouchableOpacity style={styles.quickCard}>
-            <MaterialCommunityIcons name="emoticon-happy-outline" size={32} color="#19d44c" />
+          <TouchableOpacity activeOpacity={0.85} style={styles.quickCard}>
+            <MaterialCommunityIcons name="emoticon-happy-outline" size={32} color={COLORS.primary} />
             <Text style={styles.quickTitle}>Nuestra Filosofía</Text>
             <Text style={styles.quickDesc}>Misión y visión</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.quickCard}>
-            <MaterialCommunityIcons name="dumbbell" size={32} color="#19d44c" />
+
+          <TouchableOpacity activeOpacity={0.85} style={styles.quickCard}>
+            <MaterialCommunityIcons name="dumbbell" size={32} color={COLORS.primary} />
             <Text style={styles.quickTitle}>Gestionar Accesorios</Text>
-            <Text style={styles.quickDesc}>Inventario de equipos.</Text>
+            <Text style={styles.quickDesc}>Inventario de equipos</Text>
           </TouchableOpacity>
         </View>
-        {/* Estadística */}
+
+        {/* Gráfico */}
         <View style={styles.statsCard}>
           <View style={styles.statsHeader}>
             <Text style={styles.statsTitle}>Estadística</Text>
             <TouchableOpacity style={styles.statsFilter}>
               <Text style={styles.statsFilterText}>Últimos 3 meses</Text>
-              <Ionicons name="chevron-down" size={16} color="#888" />
+              <Ionicons name="chevron-down" size={16} color={COLORS.muted} />
             </TouchableOpacity>
           </View>
+
           <View style={styles.statsLegend}>
             <View style={styles.legendItem}>
-              <View style={[styles.legendDot, {backgroundColor: '#19d44c'}]} />
+              <View style={[styles.legendDot, { backgroundColor: COLORS.primary }]} />
               <Text style={styles.legendText}>Membresías</Text>
             </View>
             <View style={styles.legendItem}>
-              <View style={[styles.legendDot, {backgroundColor: '#8be19c'}]} />
+              <View style={[styles.legendDot, { backgroundColor: '#8be19c' }]} />
               <Text style={styles.legendText}>Socios</Text>
             </View>
           </View>
-          {/* Gráfico de barras simulado */}
+
           <View style={styles.barChart}>
-            <View style={[styles.bar, {height: 40, backgroundColor: '#19d44c'}]} />
-            <View style={[styles.bar, {height: 20, backgroundColor: '#8be19c'}]} />
-            <View style={[styles.bar, {height: 25, backgroundColor: '#19d44c'}]} />
-            <View style={[styles.bar, {height: 12, backgroundColor: '#8be19c'}]} />
-            <View style={[styles.bar, {height: 60, backgroundColor: '#19d44c'}]} />
-            <View style={[styles.bar, {height: 35, backgroundColor: '#8be19c'}]} />
+            <View style={[styles.bar, { height: 50, backgroundColor: COLORS.primary }]} />
+            <View style={[styles.bar, { height: 28, backgroundColor: '#8be19c' }]} />
+            <View style={[styles.bar, { height: 35, backgroundColor: COLORS.primary }]} />
+            <View style={[styles.bar, { height: 18, backgroundColor: '#8be19c' }]} />
+            <View style={[styles.bar, { height: 65, backgroundColor: COLORS.primary }]} />
+            <View style={[styles.bar, { height: 40, backgroundColor: '#8be19c' }]} />
           </View>
+
           <View style={styles.barLabels}>
             <Text style={styles.barLabel}>Jun</Text>
             <Text style={styles.barLabel}>Jul</Text>
-            <Text style={styles.barLabel}>Ago</Text>
+            <Text style={styles.barLabel}>Aug</Text>
           </View>
         </View>
-        {/* Botón cerrar sesión */}
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
-          <Text style={styles.logoutText}>CERRAR SESIÓN</Text>
-        </TouchableOpacity>
       </ScrollView>
+
       <CustomAlertModal
         visible={alertVisible}
         title={alertTitle}
@@ -129,48 +156,48 @@ export default function Home({ navigation }) {
   );
 }
 
-const CARD_BG = '#fff';
-const BG = '#f4f2f2ff';
-const GREEN = '#19d44c';
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: BG,
-  },
+  container: { flex: 1, backgroundColor: COLORS.bg },
+
   header: {
-    width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 22,
-    paddingTop: 24,
+    justifyContent: 'space-between',
+    paddingHorizontal: SPACING.horizontal,
+    paddingTop: 40,
     paddingBottom: 10,
-    backgroundColor: CARD_BG,
+    backgroundColor: COLORS.card,
     borderBottomWidth: 1,
-    borderBottomColor: '#ededed',
+    borderBottomColor: COLORS.border,
   },
   headerText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#222',
+    color: COLORS.text,
+    flex: 1, // empuja el resto a la derecha
   },
-  headerIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  avatar: {
+  avatarCenter: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    marginLeft: 2,
     borderWidth: 1,
-    borderColor: '#19d44c',
+    borderColor: COLORS.primary,
     backgroundColor: '#fff',
   },
-  scrollContent: {
-    paddingVertical: 18,
+  logoutBtn: {
+    flexDirection: 'row',
     alignItems: 'center',
+    marginLeft: 8,
+  },
+  logoutTxt: {
+    fontSize: 12,
+    marginLeft: 4,
+    color: COLORS.primary,
+    fontWeight: 'bold',
+  },
+
+  scrollContent: {
+    paddingVertical: SPACING.vertical,
     paddingBottom: 40,
   },
   quickAccessRow: {
@@ -178,10 +205,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: 340,
     marginBottom: 14,
+    alignSelf: 'center',
   },
   quickCard: {
     flex: 1,
-    backgroundColor: CARD_BG,
+    backgroundColor: COLORS.card,
     borderRadius: 12,
     padding: 18,
     marginHorizontal: 6,
@@ -192,24 +220,25 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 1,
     borderWidth: 1,
-    borderColor: '#ededed',
+    borderColor: COLORS.border,
   },
   quickTitle: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#222',
+    color: COLORS.text,
     marginTop: 10,
     textAlign: 'center',
   },
   quickDesc: {
     fontSize: 13,
-    color: '#888',
+    color: COLORS.muted,
     marginTop: 2,
     textAlign: 'center',
   },
   statsCard: {
     width: 340,
-    backgroundColor: CARD_BG,
+    alignSelf: 'center',
+    backgroundColor: COLORS.card,
     borderRadius: 12,
     padding: 18,
     marginTop: 10,
@@ -220,7 +249,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 1,
     borderWidth: 1,
-    borderColor: '#ededed',
+    borderColor: COLORS.border,
   },
   statsHeader: {
     flexDirection: 'row',
@@ -231,18 +260,18 @@ const styles = StyleSheet.create({
   statsTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#222',
+    color: COLORS.text,
   },
   statsFilter: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f4f2f2ff',
+    backgroundColor: COLORS.bg,
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 3,
   },
   statsFilterText: {
-    color: '#888',
+    color: COLORS.muted,
     fontSize: 13,
     marginRight: 2,
   },
@@ -263,7 +292,7 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 13,
-    color: '#888',
+    color: COLORS.muted,
   },
   barChart: {
     flexDirection: 'row',
@@ -271,7 +300,7 @@ const styles = StyleSheet.create({
     height: 70,
     marginBottom: 6,
     marginTop: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   bar: {
     width: 19,
@@ -287,28 +316,8 @@ const styles = StyleSheet.create({
   },
   barLabel: {
     fontSize: 13,
-    color: '#888',
+    color: COLORS.muted,
     width: 40,
     textAlign: 'center',
-  },
-  logoutButton: {
-    backgroundColor: GREEN,
-    borderRadius: 8,
-    width: 270,
-    paddingVertical: 13,
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 10,
-    shadowColor: GREEN,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  logoutText: {
-    color: '#080808ff',
-    fontWeight: 'bold',
-    fontSize: 16,
-    textTransform: 'uppercase',
   },
 });
