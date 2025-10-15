@@ -8,6 +8,8 @@ import { useSocios } from '../src/hooks/useSocios';
 import CustomAlertModal from '../components/CostomAlertModal';
 import { COLORS, SPACING } from '../src/theme';
 
+
+// Componente Home
 export default function Home({ navigation }) {
   const { user, loading } = useAuth();
   const { socios, getSociosStats } = useSocios();
