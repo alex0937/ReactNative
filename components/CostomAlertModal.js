@@ -1,7 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 export default function CustomAlertModal({ visible, title, message, onClose }) {
+  useEffect(() => {
+    if (visible) {
+      const timer = setTimeout(() => {
+        onClose(); // Cierra el modal automáticamente
+      }, 10000); // 10 segundos
+
+      return () => clearTimeout(timer); // Limpieza si el componente se desmonta
+    }
+  }, [visible]);
+
   return (
     <Modal
       transparent={true}
@@ -24,9 +34,9 @@ export default function CustomAlertModal({ visible, title, message, onClose }) {
 
 const styles = StyleSheet.create({
   overlay: {
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalBox: {
@@ -41,13 +51,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
-    color:'#19d44c',
+    color: '#19d44c',
   },
   message: {
     fontSize: 16,
     marginBottom: 20,
     textAlign: 'center',
-    color:'#333',
+    color: '#333',
   },
   button: {
     backgroundColor: '#19d44c',

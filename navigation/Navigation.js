@@ -6,7 +6,7 @@ import { auth } from '../src/config/firebaseConfig';
 import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 import ForgotPassword from '../screens/ForgotPassword';
-import TabNavigator from './TabNavegator'; // ← nueva barra inferior
+import DrawerNavigator from './DrawerNavigator'; // 👈 ahora usamos el Drawer
 
 const Stack = createStackNavigator();
 
@@ -33,7 +33,9 @@ export default function Navigation() {
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }} />
-        <Stack.Screen name="Main" component={TabNavigator} options={{ headerShown: false }} />
+
+        {/* 👇 Aquí va el Drawer en lugar del TabNavigator */}
+        <Stack.Screen name="Main" component={DrawerNavigator} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

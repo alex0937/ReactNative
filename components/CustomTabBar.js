@@ -28,7 +28,24 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  tabBar: { flexDirection: 'row', height: 58, backgroundColor: '#fff', borderTopWidth: 1, borderColor: '#ededed' },
-  tab: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  label: { fontSize: 11, marginTop: 2 },
+  tabBar: { 
+    flexDirection: 'row', 
+    height: 58, 
+    backgroundColor: '#fff', 
+    borderTopWidth: 1, 
+    borderColor: '#ededed',
+    position: 'relative',
+    bottom: 0,
+  },
+  tab: { 
+    flex: 1, 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    paddingVertical: 8,
+  },
+  label: { 
+    fontSize: 11, 
+    marginTop: 2,
+    fontWeight: '500',
+  },
 });
