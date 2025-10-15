@@ -6,6 +6,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../src/config/firebaseConfig';
 import CustomAlertModal from '../components/CostomAlertModal';
 
+// Componente Login
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
