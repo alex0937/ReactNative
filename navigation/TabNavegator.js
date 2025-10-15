@@ -15,6 +15,7 @@ export default function TabNavigator() {
     >
       <Tab.Screen name="Inicio" component={Home} />
       <Tab.Screen name="Perfil" component={PerfilScreen} />
+      
     </Tab.Navigator>
   );
 }

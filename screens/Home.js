@@ -106,17 +106,19 @@ export default function Home({ navigation }) {
     </View>
   );
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.bg} />
-      <View style={styles.container}>
+return (
+  <SafeAreaView style={styles.safeArea}>
+    <StatusBar barStyle="dark-content" backgroundColor={COLORS.bg} />
 
+    {/* --------------  TODO DENTRO DEL SCROLL -------------- */}
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.scrollContent}
+    >
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Ionicons name="menu" size={28} color="#1cc741ff" />
-        </TouchableOpacity>
-
+        
+        
         <Text style={styles.headerText}>
           {userName ? `Bienvenido ${userName}` : 'Bienvenido'}
         </Text>
@@ -126,12 +128,12 @@ export default function Home({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Carrusel horizontal */}
+      {/* Carrusel */}
       <View style={styles.carouselWrapper}>
         <FlatList
           data={carouselData}
           renderItem={renderCarouselItem}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(_, index) => index.toString()}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
@@ -143,115 +145,112 @@ export default function Home({ navigation }) {
         <CarouselIndicators />
       </View>
 
-      {/* Contenido principal */}
-      
-        <View style={styles.quickAccessRow}>
-          <TouchableOpacity 
-            activeOpacity={0.85} 
-            style={styles.quickCard}
+      {/* Quick Access */}
+      <View style={styles.quickAccessRow}>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          style={styles.quickCard}
+          onPress={() => navigation.navigate('Socios')}
+        >
+          <FontAwesome5 name="user-plus" size={32} color={COLORS.primary} />
+          <Text style={styles.quickTitle}>Socios</Text>
+          <Text style={styles.quickDesc}>Gestión de socios</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          activeOpacity={0.85} 
+          style={styles.quickCard}
+          onPress={() => navigation.navigate('Turnos')}
+          >
+          <MaterialIcons name="event-available" size={32} color={COLORS.primary} />
+          <Text style={styles.quickTitle}>Gestionar Turnos</Text>
+          <Text style={styles.quickDesc}>Turnos y horarios</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.quickAccessRow}>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          style={styles.quickCard}
+          onPress={() => navigation.navigate('Accesorios')}
+        >
+          <MaterialCommunityIcons name="dumbbell" size={32} color={COLORS.primary} />
+          <Text style={styles.quickTitle}>Gestionar Accesorios</Text>
+          <Text style={styles.quickDesc}>Inventario de equipos</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Stats Card */}
+      <View style={styles.statsCard}>
+        <View style={styles.statsHeader}>
+          <Text style={styles.statsTitle}>Resumen de Socios</Text>
+          <TouchableOpacity
+            style={styles.statsFilter}
             onPress={() => navigation.navigate('Socios')}
           >
-            <FontAwesome5 name="user-plus" size={32} color={COLORS.primary} />
-            <Text style={styles.quickTitle}>Socios</Text>
-            <Text style={styles.quickDesc}>Gestión de socios</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            activeOpacity={0.85} 
-            style={styles.quickCard}
-            onPress={() => showCustomAlert('Turnos', 'Funcionalidad de turnos próximamente disponible', 'info')}
-          >
-            <MaterialIcons name="event-available" size={32} color={COLORS.primary} />
-            <Text style={styles.quickTitle}>Agregar un Turno</Text>
-            <Text style={styles.quickDesc}>Asignación de clases</Text>
+            <Text style={styles.statsFilterText}>Ver detalles</Text>
+            <Ionicons name="chevron-forward" size={16} color={COLORS.muted} />
           </TouchableOpacity>
         </View>
 
-        <View style={styles.quickAccessRow}>
-          <TouchableOpacity 
-            activeOpacity={0.85} 
-            style={styles.quickCard}
-            onPress={() => showCustomAlert('Filosofía', 'Fomentar el bienestar físico y mental de nuestros socios a través de una experiencia personalizada e innovadora.', 'info')}
-          >
-            <MaterialCommunityIcons name="emoticon-happy-outline" size={32} color={COLORS.primary} />
-            <Text style={styles.quickTitle}>Nuestra Filosofía</Text>
-            <Text style={styles.quickDesc}>Misión y visión</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            activeOpacity={0.85} 
-            style={styles.quickCard}
-            onPress={() => navigation.navigate('Accesorios')}
-          >
-            <MaterialCommunityIcons name="dumbbell" size={32} color={COLORS.primary} />
-            <Text style={styles.quickTitle}>Gestionar Accesorios</Text>
-            <Text style={styles.quickDesc}>Inventario de equipos</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.statsCard}>
-          <View style={styles.statsHeader}>
-            <Text style={styles.statsTitle}>Resumen de Socios</Text>
-            <TouchableOpacity 
-              style={styles.statsFilter}
-              onPress={() => navigation.navigate('Socios')}
-            >
-              <Text style={styles.statsFilterText}>Ver detalles</Text>
-              <Ionicons name="chevron-forward" size={16} color={COLORS.muted} />
-            </TouchableOpacity>
+        <View style={styles.sociosStatsContainer}>
+          <View style={styles.socioStatItem}>
+            <Text style={styles.socioStatNumber}>{sociosStats.total}</Text>
+            <Text style={styles.socioStatLabel}>Total</Text>
+            <Ionicons name="people-outline" size={24} color={COLORS.primary} />
           </View>
+          <View style={styles.socioStatItem}>
+            <Text style={[styles.socioStatNumber, { color: '#27AE60' }]}>
+              {sociosStats.activos}
+            </Text>
+            <Text style={styles.socioStatLabel}>Activos</Text>
+            <Ionicons name="checkmark-circle-outline" size={24} color="#27AE60" />
+          </View>
+          <View style={styles.socioStatItem}>
+            <Text style={[styles.socioStatNumber, { color: '#E74C3C' }]}>
+              {sociosStats.inactivos}
+            </Text>
+            <Text style={styles.socioStatLabel}>Inactivos</Text>
+            <Ionicons name="close-circle-outline" size={24} color="#E74C3C" />
+          </View>
+        </View>
 
-          <View style={styles.sociosStatsContainer}>
-            <View style={styles.socioStatItem}>
-              <Text style={styles.socioStatNumber}>{sociosStats.total}</Text>
-              <Text style={styles.socioStatLabel}>Total</Text>
-              <Ionicons name="people-outline" size={24} color={COLORS.primary} />
-            </View>
-            <View style={styles.socioStatItem}>
-              <Text style={[styles.socioStatNumber, { color: '#27AE60' }]}>
-                {sociosStats.activos}
+        <View style={styles.membershipBreakdown}>
+          <Text style={styles.membershipTitle}>Por Tipo de Membresía</Text>
+          <View style={styles.membershipStats}>
+            <View style={styles.membershipItem}>
+              <View style={[styles.membershipDot, { backgroundColor: '#95A5A6' }]} />
+              <Text style={styles.membershipLabel}>
+                Básica: {socios.filter((s) => s.tipoMembresia === 'Básica').length}
               </Text>
-              <Text style={styles.socioStatLabel}>Activos</Text>
-              <Ionicons name="checkmark-circle-outline" size={24} color="#27AE60" />
             </View>
-            <View style={styles.socioStatItem}>
-              <Text style={[styles.socioStatNumber, { color: '#E74C3C' }]}>
-                {sociosStats.inactivos}
+            <View style={styles.membershipItem}>
+              <View style={[styles.membershipDot, { backgroundColor: '#F39C12' }]} />
+              <Text style={styles.membershipLabel}>
+                Premium: {socios.filter((s) => s.tipoMembresia === 'Premium').length}
               </Text>
-              <Text style={styles.socioStatLabel}>Inactivos</Text>
-              <Ionicons name="close-circle-outline" size={24} color="#E74C3C" />
             </View>
-          </View>
-
-          <View style={styles.membershipBreakdown}>
-            <Text style={styles.membershipTitle}>Por Tipo de Membresía</Text>
-            <View style={styles.membershipStats}>
-              <View style={styles.membershipItem}>
-                <View style={[styles.membershipDot, { backgroundColor: '#95A5A6' }]} />
-                <Text style={styles.membershipLabel}>Básica: {socios.filter(s => s.tipoMembresia === 'Básica').length}</Text>
-              </View>
-              <View style={styles.membershipItem}>
-                <View style={[styles.membershipDot, { backgroundColor: '#F39C12' }]} />
-                <Text style={styles.membershipLabel}>Premium: {socios.filter(s => s.tipoMembresia === 'Premium').length}</Text>
-              </View>
-              <View style={styles.membershipItem}>
-                <View style={[styles.membershipDot, { backgroundColor: '#9B59B6' }]} />
-                <Text style={styles.membershipLabel}>VIP: {socios.filter(s => s.tipoMembresia === 'VIP').length}</Text>
-              </View>
+            <View style={styles.membershipItem}>
+              <View style={[styles.membershipDot, { backgroundColor: '#9B59B6' }]} />
+              <Text style={styles.membershipLabel}>
+                VIP: {socios.filter((s) => s.tipoMembresia === 'VIP').length}
+              </Text>
             </View>
           </View>
         </View>
-
-      <CustomAlertModal
-        visible={alertVisible}
-        title={alertTitle}
-        message={alertMessage}
-        onClose={closeCustomAlert}
-        type={alertType}
-      />
       </View>
-    </SafeAreaView>
-  );
+    </ScrollView>
+
+    {/* Modal de alerta (siempre por encima) */}
+    <CustomAlertModal
+      visible={alertVisible}
+      title={alertTitle}
+      message={alertMessage}
+      onClose={closeCustomAlert}
+      type={alertType}
+    />
+  </SafeAreaView>
+);
 }
 
 const styles = StyleSheet.create({

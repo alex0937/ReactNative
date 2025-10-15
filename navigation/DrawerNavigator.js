@@ -7,6 +7,7 @@ import TabNavigator from './TabNavegator';
 import PerfilScreen from '../screens/PerfilScreen';
 import AccesoriosScreen from '../screens/AccesoriosScreen';
 import SociosScreen from '../screens/SociosScreen';
+import TurnosScreen from '../screens/TurnosScreen';
 import { View, Text, ImageBackground, Image, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import CustomAlertModal from '../components/CostomAlertModal';
 import { auth } from '../src/config/firebaseConfig';
@@ -116,6 +117,7 @@ export default function DrawerNavigator() {
         name="Inicio"
         component={TabNavigator}
         options={{
+          swipeEnabled: false,
           drawerIcon: ({ color }) => (
             <Ionicons name="home-outline" size={20} color={color} />
           ),
@@ -146,6 +148,16 @@ export default function DrawerNavigator() {
         options={{
           drawerIcon: ({ color }) => (
             <MaterialCommunityIcons name="dumbbell" size={20} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Turnos"
+        component={TurnosScreen}
+        options={{
+          headerShown: false,
+          drawerIcon: ({ color }) => (
+            <Ionicons name="calendar-outline" size={20} color={color} />
           ),
         }}
       />
