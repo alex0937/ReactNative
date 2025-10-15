@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, StatusBar, ScrollView, Platform, ImageBackground} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../src/config/firebaseConfig';
 import { FontAwesome } from '@expo/vector-icons';
@@ -42,6 +43,7 @@ export default function ForgotPassword({ navigation }) {
   };
 
   return (   
+    <SafeAreaView style={{ flex: 1 }}>
      <ImageBackground
             source={require('../assets/fondo-gymdos.png')} // 👈 usa el fondo que me pasaste
             style={styles.background}
@@ -86,6 +88,7 @@ export default function ForgotPassword({ navigation }) {
       </ScrollView>
     </View>
     </ImageBackground>
+    </SafeAreaView>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, StatusBar, ScrollView, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../src/config/firebaseConfig';
@@ -57,14 +58,15 @@ export default function Login({ navigation }) {
   };
 
   return (
-    <ImageBackground
-      source={require('../assets/fondo-gymdos.png')}
-      style={styles.background}
-      imageStyle={styles.backgroundImage}
-      resizeMode="cover"
-    >
-      <View style={styles.overlay}>
-        <StatusBar barStyle="dark-content" backgroundColor="#f4f2f2ff" />
+    <SafeAreaView style={{ flex: 1 }}>
+      <ImageBackground
+        source={require('../assets/fondo-gymdos.png')}
+        style={styles.background}
+        imageStyle={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <View style={styles.overlay}>
+          <StatusBar barStyle="dark-content" backgroundColor="#f4f2f2ff" />
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -132,6 +134,7 @@ export default function Login({ navigation }) {
         </KeyboardAvoidingView>
       </View>
     </ImageBackground>
+    </SafeAreaView>
   );
 }
 

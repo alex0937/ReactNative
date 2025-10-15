@@ -1,6 +1,7 @@
 import React from 'react';
 import {createDrawerNavigator,DrawerContentScrollView,DrawerItemList 
 } from '@react-navigation/drawer';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import TabNavigator from './TabNavegator';
 import PerfilScreen from '../screens/PerfilScreen';
@@ -41,12 +42,13 @@ function CustomDrawerContent(props) {
   const closeInfoModal = () => setInfoModal({ ...infoModal, visible: false });
 
   return (
-    <DrawerContentScrollView {...props} contentContainerStyle={{ paddingTop: 0 }}>
-      <ImageBackground
-        source={require('../assets/fondo-gym.png')}
-        style={styles.headerBackground}
-        imageStyle={{ opacity: 0.85 }}
-      >
+    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <DrawerContentScrollView {...props} contentContainerStyle={{ paddingTop: 0 }}>
+        <ImageBackground
+          source={require('../assets/fondo-gym.png')}
+          style={styles.headerBackground}
+          imageStyle={{ opacity: 0.85 }}
+        >
         <View style={styles.headerContent}>
           {user && user.photoURL ? (
             <Image source={{ uri: user.photoURL }} style={styles.avatar} />
@@ -94,6 +96,7 @@ function CustomDrawerContent(props) {
       {/* Mensajes de info/éxito/error usando CustomAlertModal */}
       <CustomAlertModal visible={infoModal.visible} title={infoModal.title} message={infoModal.message} onClose={closeInfoModal} />
     </DrawerContentScrollView>
+    </SafeAreaView>
   );
 }
 

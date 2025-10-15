@@ -1,5 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Home from '../screens/Home';
 import PerfilScreen from '../screens/PerfilScreen'; // dummy
 import CustomTabBar from '../components/CustomTabBar';

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../src/theme';
 
@@ -10,32 +11,35 @@ const ICONS = {
 
 export default function CustomTabBar({ state, descriptors, navigation }) {
   return (
-    <View style={styles.tabBar}>
-      {state.routes.map((route, index) => {
-        const isFocused = state.index === index;
-        const color = isFocused ? COLORS.primary : '#888';
-        const onPress = () => navigation.navigate(route.name);
+    <SafeAreaView edges={['bottom']} style={styles.safeArea}>
+      <View style={styles.tabBar}>
+        {state.routes.map((route, index) => {
+          const isFocused = state.index === index;
+          const color = isFocused ? COLORS.primary : '#888';
+          const onPress = () => navigation.navigate(route.name);
 
-        return (
-          <TouchableOpacity key={route.key} style={styles.tab} onPress={onPress}>
-            {ICONS[route.name]({ color })}
-            <Text style={[styles.label, { color }]}>{route.name}</Text>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
+          return (
+            <TouchableOpacity key={route.key} style={styles.tab} onPress={onPress}>
+              {ICONS[route.name]({ color })}
+              <Text style={[styles.label, { color }]}>{route.name}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: '#fff',
+  },
   tabBar: { 
     flexDirection: 'row', 
     height: 58, 
     backgroundColor: '#fff', 
     borderTopWidth: 1, 
     borderColor: '#ededed',
-    position: 'relative',
-    bottom: 0,
   },
   tab: { 
     flex: 1, 

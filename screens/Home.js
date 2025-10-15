@@ -1,5 +1,6 @@
 import React from 'react';
-import {View,Text,TouchableOpacity,StyleSheet,Image,StatusBar,ScrollView,ActivityIndicator,FlatList,Dimensions,SafeAreaView,} from 'react-native';
+import {View,Text,TouchableOpacity,StyleSheet,Image,StatusBar,ScrollView,ActivityIndicator,FlatList,Dimensions,} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {FontAwesome5,MaterialIcons,MaterialCommunityIcons,Ionicons,} from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../src/hooks/useAuth';
@@ -65,14 +66,14 @@ export default function Home({ navigation }) {
     {
       title: '💪 Bienvenidos a ADN-FIT',
       content: 'Transforma tu cuerpo y mente en el mejor gimnasio de la ciudad.',
-      colors: ['#667eea', '#764ba2'],
+      colors: ['#66ea71ff', '#66517aec'],
       icon: 'fitness-outline'
     },
     {
       title: '🎯 Nuestra Misión',
       content: 'Fomentar el bienestar físico y mental de nuestros socios con equipamiento de última generación.',
-      colors: ['#f093fb', '#f5576c'],
-      icon: 'heart-outline'
+      colors: ['#1fa541ff', '#181c27ff'],
+      icon: 'heart-outline',
     },
     {
       title: '🚀 Nuestra Visión',
@@ -143,7 +144,7 @@ export default function Home({ navigation }) {
       </View>
 
       {/* Contenido principal */}
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      
         <View style={styles.quickAccessRow}>
           <TouchableOpacity 
             activeOpacity={0.85} 
@@ -240,7 +241,6 @@ export default function Home({ navigation }) {
             </View>
           </View>
         </View>
-      </ScrollView>
 
       <CustomAlertModal
         visible={alertVisible}

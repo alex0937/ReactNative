@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import { auth } from '../src/config/firebaseConfig';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
@@ -144,13 +145,14 @@ export default function SignUp({ navigation }) {
   );
 
   return (
-    <ImageBackground
-      source={require('../assets/fondo-gymdos.png')}
-      style={styles.background}
-      imageStyle={styles.backgroundImage}
-      resizeMode= "cover"
-    >
-      <View style={styles.container}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ImageBackground
+        source={require('../assets/fondo-gymdos.png')}
+        style={styles.background}
+        imageStyle={styles.backgroundImage}
+        resizeMode= "cover"
+      >
+        <View style={styles.container}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.container}
@@ -276,6 +278,7 @@ export default function SignUp({ navigation }) {
         </KeyboardAvoidingView>
       </View>
     </ImageBackground>
+    </SafeAreaView>
   );
 }
 
