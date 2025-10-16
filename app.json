@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "mobileStart",
-    "slug": "mobileStart",
+    "name": "ADN-Gym",
+    "slug": "ADN-Gym",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo-gym.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/logo-gym.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -24,7 +24,7 @@
       "package": "com.shadowr2909.mobileStart"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/logo-gym.png"
     },
     "extra": {
       "eas": {

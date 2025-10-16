@@ -69,7 +69,7 @@ export default function PerfilScreen({ navigation }) {
           await setDoc(userDocRef, initialData);
         }
       } catch (error) {
-        Alert.alert('Error', 'No se pudo cargar el perfil del usuario');
+        Alert.alert('⚠️ Error', 'No se pudo cargar el perfil del usuario');
       } finally {
         setLoadingProfile(false);
       }
@@ -112,10 +112,10 @@ export default function PerfilScreen({ navigation }) {
     
     await updateUserData(user.uid, userData);
 
-    Alert.alert('Éxito', 'Foto actualizada en Firebase y Firestore');
+    Alert.alert('Éxito', 'Foto de perfil actualizada');
 
   } catch (error) {
-    Alert.alert('Error', error.message);
+    Alert.alert('⚠️ Error', error.message);
   } finally {
     setLoading(false);
   }
@@ -125,17 +125,17 @@ export default function PerfilScreen({ navigation }) {
 
   const validateForm = () => {
     if (dni && dni.length < 7) {
-      Alert.alert('Error', 'El DNI debe tener al menos 7 dígitos');
+      Alert.alert('⚠️ Error', 'El DNI debe tener al menos 7 dígitos');
       return false;
     }
     
     if (phone && !/^\d{10}$/.test(phone.replace(/\s/g, ''))) {
-      Alert.alert('Error', 'El teléfono debe tener 10 dígitos');
+      Alert.alert('⚠️ Error', 'El teléfono debe tener 10 dígitos');
       return false;
     }
     
     if (birthDate && !/^\d{2}\/\d{2}\/\d{4}$/.test(birthDate)) {
-      Alert.alert('Error', 'La fecha debe tener formato DD/MM/YYYY');
+      Alert.alert('⚠️ Error', 'La fecha debe tener formato DD/MM/YYYY');
       return false;
     }
     
@@ -179,11 +179,11 @@ export default function PerfilScreen({ navigation }) {
           console.log('✅ Modal de éxito activado');
         }, 150);
       } else {
-        throw new Error('Error al guardar en Firestore');
+        throw new Error('⚠️ Error al guardar');
       }
       
     } catch (err) {
-      Alert.alert('Error', `No se pudo actualizar el perfil: ${err.message}`);
+      Alert.alert('⚠️ Error', `No se pudo actualizar el perfil: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -235,7 +235,7 @@ export default function PerfilScreen({ navigation }) {
       
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
-      Alert.alert('Error', `No se pudo cerrar la sesión: ${error.code || error.message}`);
+      Alert.alert('⚠️ Error', `No se pudo cerrar la sesión: ${error.code || error.message}`);
     }
   };
 
@@ -332,7 +332,7 @@ export default function PerfilScreen({ navigation }) {
             placeholder="Número de teléfono"
           />
 
-          <Text style={styles.label}>Dirección</Text>
+          <Text style={styles.label}>Domicilio</Text>
           <TextInput
             style={styles.input}
             value={address}
@@ -474,7 +474,7 @@ export default function PerfilScreen({ navigation }) {
             
             <Text style={styles.successTitle}>¡Perfil Actualizado!</Text>
             <Text style={styles.successMessage}>
-              Tus datos han sido guardados correctamente en Firebase y Firestore.
+              Tus datos han sido guardados correctamente.
             </Text>
             
             <TouchableOpacity
