@@ -13,7 +13,6 @@ import { CommonActions } from '@react-navigation/native';
 export default function PerfilScreen({ navigation }) {
   const user = auth.currentUser;
 
-  const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
@@ -44,7 +43,6 @@ export default function PerfilScreen({ navigation }) {
         
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          setDisplayName(userData.displayName || user.displayName || '');
           setFirstName(userData.firstName || '');
           setLastName(userData.lastName || '');
           setPhone(userData.phone || '');
@@ -55,7 +53,6 @@ export default function PerfilScreen({ navigation }) {
           setPhotoURL(userData.photoURL || user.photoURL || null);
         } else {
           const initialData = {
-            displayName: user.displayName || '',
             firstName: '',
             lastName: '',
             email: user.email || '',
@@ -127,11 +124,6 @@ export default function PerfilScreen({ navigation }) {
 
 
   const validateForm = () => {
-    if (!displayName.trim()) {
-      Alert.alert('Error', 'El nombre completo es requerido');
-      return false;
-    }
-    
     if (dni && dni.length < 7) {
       Alert.alert('Error', 'El DNI debe tener al menos 7 dígitos');
       return false;
@@ -160,12 +152,10 @@ export default function PerfilScreen({ navigation }) {
     setLoading(true);
     try {
       await updateProfile(user, { 
-        displayName: displayName,
         photoURL: photoURL 
       });
       
       const userData = {
-        displayName: displayName,
         firstName: firstName,
         lastName: lastName,
         email: user.email,
@@ -285,25 +275,18 @@ export default function PerfilScreen({ navigation }) {
     </View>
   )}
 
-  <TouchableOpacity style={styles.editPhotoButton} onPress={() => handlePickImage(false)}>
-    {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.editPhotoText}>Galería</Text>}
-  </TouchableOpacity>
+  <View style={styles.photoButtonsContainer}>
+    <TouchableOpacity style={styles.editPhotoButton} onPress={() => handlePickImage(false)}>
+      {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.editPhotoText}>Galería</Text>}
+    </TouchableOpacity>
 
-  <TouchableOpacity style={[styles.editPhotoButton, { marginTop: 4 }]} onPress={() => handlePickImage(true)}>
-    <Text style={styles.editPhotoText}>Cámara</Text>
-  </TouchableOpacity>
+    <TouchableOpacity style={styles.editPhotoButton} onPress={() => handlePickImage(true)}>
+      <Text style={styles.editPhotoText}>Cámara</Text>
+    </TouchableOpacity>
+  </View>
 </View>
 
           {/* Campos */}
-          <Text style={styles.label}>Usuario</Text>
-          <TextInput
-            style={styles.input}
-            value={displayName}
-            onChangeText={setDisplayName}
-            editable={editing}
-            placeholder="Nombre completo"
-          />
-
           <Text style={styles.label}>Nombres</Text>
           <TextInput
             style={styles.input}
@@ -608,8 +591,9 @@ const styles = StyleSheet.create({
   avatarContainer: { alignItems: 'center', marginBottom: 12 },
   avatar: { width: 120, height: 120, borderRadius: 60 },
   avatarPlaceholder: { backgroundColor: '#19d44c', justifyContent: 'center', alignItems: 'center' },
-  editPhotoButton: { marginTop: 8, backgroundColor: '#19d44c', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 },
-  editPhotoText: { color: '#fff', fontWeight: 'bold' },
+  photoButtonsContainer: {flexDirection: 'row',marginTop: 8,gap: 8,},
+  editPhotoButton: { backgroundColor: '#19d44c', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, flex: 1,textAlign: 'center', alignItems: 'center', justifyContent: 'center' },
+  editPhotoText: { color: '#030303ff', fontWeight: 'bold' },
   label: { alignSelf: 'flex-start', fontSize: 14, fontWeight: '600', color: '#222', marginTop: 10 },
   input: { width: '100%', height: 44, borderRadius: 8, borderWidth: 1, borderColor: '#ddd', paddingHorizontal: 10, marginTop: 6, backgroundColor: '#fff' },
   selectInput: {
