@@ -1,5 +1,4 @@
 import { 
-  getFirestore, 
   collection, 
   doc, 
   setDoc, 
@@ -11,8 +10,7 @@ import {
   orderBy,
   serverTimestamp 
 } from 'firebase/firestore';
-
-const db = getFirestore();
+import { db } from './firebaseConfig'; // Usar la instancia ya configurada
 const SOCIOS_COLLECTION = 'socios';
 
 // Crear nuevo socio

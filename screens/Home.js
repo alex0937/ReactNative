@@ -109,14 +109,7 @@ export default function Home({ navigation }) {
 return (
   <SafeAreaView style={styles.safeArea}>
     <StatusBar barStyle="dark-content" backgroundColor={COLORS.bg} />
-
-    {/* --------------  TODO DENTRO DEL SCROLL -------------- */}
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContent}
-    >
-      {/* Header */}
-      <View style={styles.header}>
+ <View style={styles.header}>
         
         
         <Text style={styles.headerText}>
@@ -127,6 +120,13 @@ return (
           <Image source={require('../assets/logo-gym.png')} style={styles.avatarCenter} />
         </TouchableOpacity>
       </View>
+    {/* --------------  TODO DENTRO DEL SCROLL -------------- */}
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.scrollContent}
+    >
+      {/* Header */}
+     
 
       {/* Carrusel */}
       <View style={styles.carouselWrapper}>
