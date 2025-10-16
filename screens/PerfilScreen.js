@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, ScrollView
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
@@ -8,7 +16,6 @@ import { auth } from '../src/config/firebaseConfig';
 import { updateProfile } from 'firebase/auth';
 import { pickImageAsync, takePhotoAsync } from '../src/config/imagePicker';
 import { uploadToCloudinary } from '../src/config/uploadToCloudinary';
-import CloudinaryImage from '../components/CloudinaryImage';
 
 export default function PerfilScreen() {
   const user = auth.currentUser;
@@ -16,51 +23,47 @@ export default function PerfilScreen() {
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [phone, setPhone] = useState('');
   const [photoURL, setPhotoURL] = useState(user?.photoURL || null);
-  const [publicId, setPublicId] = useState(null);
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  /* ----------  efecto: extraer publicId si ya existe ---------- */
-  useEffect(() => {
-    if (user?.photoURL && user.photoURL.includes('cloudinary')) {
-      const parts = user.photoURL.split('/');
-      const name = parts[parts.length - 1].split('.')[0];
-      setPublicId(name);
-    }
-  }, [user]);
-
   /* ----------  subir imagen  ---------- */
   const handlePickImage = async (fromCamera = false) => {
-    try {
-      const result = fromCamera ? await takePhotoAsync() : await pickImageAsync();
-      if (!result) return;
+  try {
+    // 1️⃣ Obtener imagen desde cámara o galería
+    const result = fromCamera ? await takePhotoAsync() : await pickImageAsync();
 
-      setLoading(true);
-      const uploadedUrl = await uploadToCloudinary(result.uri);
+    // 2️⃣ Validar si canceló
+    if (!result) return;
 
-      // extraer publicId de la nueva URL
-      const parts = uploadedUrl.split('/');
-      const name = parts[parts.length - 1].split('.')[0];
+    // 3️⃣ Obtener la URI correcta según versión de ImagePicker
+    const imageUri = result.uri || result.assets?.[0]?.uri;
+    if (!imageUri) return;
 
-      setPhotoURL(uploadedUrl);
-      setPublicId(name);
-      await updateProfile(user, { photoURL: uploadedUrl });
+    // 4️⃣ Mostrar loading
+    setLoading(true);
 
-      Alert.alert('Éxito', 'Foto actualizada');
-    } catch (error) {
-      Alert.alert('Error', error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    // 5️⃣ Subir a Cloudinary usando la URI correcta
+    const uploadedUrl = await uploadToCloudinary(imageUri);
+    setPhotoURL(uploadedUrl);
+    await updateProfile(user, { photoURL: uploadedUrl });
+
+    Alert.alert('Éxito', 'Foto actualizada');
+
+  } catch (error) {
+    console.log('Error general handlePickImage:', error);
+    Alert.alert('Error', error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   /* ----------  guardar perfil  ---------- */
   const handleSave = async () => {
     setLoading(true);
     try {
       await updateProfile(user, { displayName });
-      // si tienes updateUserData en Firestore, descomenta:
-      // await updateUserData(user.uid, { phone, photoURL });
       setEditing(false);
       Alert.alert('Éxito', 'Perfil actualizado correctamente.');
     } catch (err) {
@@ -74,47 +77,68 @@ export default function PerfilScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
-    
         <View style={styles.card}>
           <Text style={styles.title}>Mi Perfil</Text>
 
           {/* Avatar */}
           <View style={styles.avatarContainer}>
-            {publicId ? (
-              <CloudinaryImage publicId={publicId} style={styles.avatar} />
-            ) : (
-              <View style={[styles.avatar, styles.avatarPlaceholder]}>
-                <FontAwesome name="user" size={56} color="#fff" />
-              </View>
-            )}
+  {photoURL ? (
+    <Image source={{ uri: photoURL }} style={styles.avatar} />
+  ) : (
+    <View style={[styles.avatar, styles.avatarPlaceholder]}>
+      <FontAwesome name="user" size={56} color="#fff" />
+    </View>
+  )}
 
-            <TouchableOpacity style={styles.editPhotoButton} onPress={() => handlePickImage(false)}>
-              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.editPhotoText}>Galería</Text>}
-            </TouchableOpacity>
+  <TouchableOpacity style={styles.editPhotoButton} onPress={() => handlePickImage(false)}>
+    {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.editPhotoText}>Galería</Text>}
+  </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.editPhotoButton, { marginTop: 4 }]} onPress={() => handlePickImage(true)}>
-              <Text style={styles.editPhotoText}>Cámara</Text>
-            </TouchableOpacity>
-          </View>
+  <TouchableOpacity style={[styles.editPhotoButton, { marginTop: 4 }]} onPress={() => handlePickImage(true)}>
+    <Text style={styles.editPhotoText}>Cámara</Text>
+  </TouchableOpacity>
+</View>
 
           {/* Campos */}
           <Text style={styles.label}>Nombre</Text>
-          <TextInput style={styles.input} value={displayName} onChangeText={setDisplayName} editable={editing} />
+          <TextInput
+            style={styles.input}
+            value={displayName}
+            onChangeText={setDisplayName}
+            editable={editing}
+          />
 
           <Text style={styles.label}>Correo</Text>
-          <TextInput style={[styles.input, { backgroundColor: '#f0f0f0' }]} value={user?.email || ''} editable={false} />
+          <TextInput
+            style={[styles.input, { backgroundColor: '#f0f0f0' }]}
+            value={user?.email || ''}
+            editable={false}
+          />
 
           <Text style={styles.label}>Teléfono</Text>
-          <TextInput style={styles.input} value={phone} onChangeText={setPhone} editable={editing} keyboardType="phone-pad" />
+          <TextInput
+            style={styles.input}
+            value={phone}
+            onChangeText={setPhone}
+            editable={editing}
+            keyboardType="phone-pad"
+          />
 
           {/* Botón principal */}
           <View style={styles.actions}>
             {editing ? (
-              <TouchableOpacity style={styles.saveButton} onPress={handleSave} disabled={loading}>
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={handleSave}
+                disabled={loading}
+              >
                 {loading ? <ActivityIndicator color="#000" /> : <Text style={styles.saveText}>Guardar</Text>}
               </TouchableOpacity>
             ) : (
-              <TouchableOpacity style={styles.editButton} onPress={() => setEditing(true)}>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => setEditing(true)}
+              >
                 <Text style={styles.editText}>Editar Perfil</Text>
               </TouchableOpacity>
             )}

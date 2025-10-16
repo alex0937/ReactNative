@@ -27,10 +27,12 @@ export async function takePhotoAsync() {
   }
 
   const result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images, 
     allowsEditing: true,
     aspect: [1, 1],
     quality: 0.8,
   });
+
   if (result.cancelled) return null;
   return result;
 }
