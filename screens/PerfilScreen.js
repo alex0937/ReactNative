@@ -26,7 +26,9 @@ export default function PerfilScreen({ navigation }) {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [showGenderModal, setShowGenderModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showPhotoSuccessModal, setShowPhotoSuccessModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showLogoutSuccessModal, setShowLogoutSuccessModal] = useState(false);
 
@@ -89,6 +91,17 @@ export default function PerfilScreen({ navigation }) {
     }
   }, [showSuccessModal]);
 
+  // Auto-cerrar modal de éxito de foto después de 2 segundos
+  useEffect(() => {
+    if (showPhotoSuccessModal) {
+      const timer = setTimeout(() => {
+        setShowPhotoSuccessModal(false);
+      }, 4000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showPhotoSuccessModal]);
+
   const handlePickImage = async (fromCamera = false) => {
   try {
     const result = fromCamera ? await takePhotoAsync() : await pickImageAsync();
@@ -112,7 +125,7 @@ export default function PerfilScreen({ navigation }) {
     
     await updateUserData(user.uid, userData);
 
-    Alert.alert('Éxito', 'Foto de perfil actualizada');
+    setShowPhotoSuccessModal(true);
 
   } catch (error) {
     Alert.alert('⚠️ Error', error.message);
@@ -145,6 +158,16 @@ export default function PerfilScreen({ navigation }) {
   const handleSaveClick = () => {
     if (!validateForm()) return;
     setShowConfirmModal(true);
+  };
+
+  const handleCancelEdit = () => {
+    setShowCancelModal(true);
+  };
+
+  const handleConfirmCancel = () => {
+    setShowCancelModal(false);
+    setEditing(false);
+    // Opcional: Recargar datos originales si quieres descartar cambios
   };
 
   const handleConfirmSave = async () => {
@@ -275,15 +298,17 @@ export default function PerfilScreen({ navigation }) {
     </View>
   )}
 
-  <View style={styles.photoButtonsContainer}>
-    <TouchableOpacity style={styles.editPhotoButton} onPress={() => handlePickImage(false)}>
-      {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.editPhotoText}>Galería</Text>}
-    </TouchableOpacity>
+  {editing && (
+    <View style={styles.photoButtonsContainer}>
+      <TouchableOpacity style={styles.editPhotoButton} onPress={() => handlePickImage(false)}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.editPhotoText}>Galería</Text>}
+      </TouchableOpacity>
 
-    <TouchableOpacity style={styles.editPhotoButton} onPress={() => handlePickImage(true)}>
-      <Text style={styles.editPhotoText}>Cámara</Text>
-    </TouchableOpacity>
-  </View>
+      <TouchableOpacity style={styles.editPhotoButton} onPress={() => handlePickImage(true)}>
+        <Text style={styles.editPhotoText}>Cámara</Text>
+      </TouchableOpacity>
+    </View>
+  )}
 </View>
 
           {/* Campos */}
@@ -365,13 +390,22 @@ export default function PerfilScreen({ navigation }) {
           {/* Botón principal */}
           <View style={styles.actions}>
             {editing ? (
-              <TouchableOpacity
-                style={styles.saveButton}
-                onPress={handleSaveClick}
-                disabled={loading}
-              >
-                {loading ? <ActivityIndicator color="#000" /> : <Text style={styles.saveText}>Guardar</Text>}
-              </TouchableOpacity>
+              <View style={styles.editingButtons}>
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={handleSaveClick}
+                  disabled={loading}
+                >
+                  {loading ? <ActivityIndicator color="#000" /> : <Text style={styles.saveText}>Guardar</Text>}
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={styles.cancelEditButton}
+                  onPress={handleCancelEdit}
+                >
+                  <Text style={styles.cancelEditButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
             ) : (
               <TouchableOpacity
                 style={styles.editButton}
@@ -544,6 +578,65 @@ export default function PerfilScreen({ navigation }) {
           </View>
         </View>
       </Modal>
+
+      {/* Modal de confirmación para cancelar edición */}
+      <Modal
+        visible={showCancelModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowCancelModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.confirmModalContent}>
+            
+            <Text style={styles.confirmTitle}>¿Cancelar edición?</Text>
+            <Text style={styles.confirmMessage}>
+              Se perderán los cambios que hayas realizado.
+            </Text>
+            
+            <View style={styles.confirmButtons}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setShowCancelModal(false)}
+              >
+                <Text style={styles.cancelButtonText}>Continuar</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={styles.discardButton}
+                onPress={handleConfirmCancel}
+              >
+                <Text style={styles.discardButtonText}>Descartar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal de éxito para foto de perfil */}
+      <Modal
+        visible={showPhotoSuccessModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowPhotoSuccessModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.successModalContent}>
+            
+            <Text style={styles.successTitle}>¡Foto Actualizada!</Text>
+            <Text style={styles.successMessage}>
+              Tu foto de perfil ha sido actualizada correctamente.
+            </Text>
+            
+            <TouchableOpacity
+              style={styles.successButton}
+              onPress={() => setShowPhotoSuccessModal(false)}
+            >
+              <Text style={styles.successButtonText}>Continuar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -615,7 +708,7 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', marginTop: 18 },
   editButton: { backgroundColor: '#1afa56', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 8 },
   editText: { fontWeight: 'bold', color: '#000' },
-  saveButton: { backgroundColor: '#19d44c', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 8 },
+  saveButton: { backgroundColor: '#19d44c', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 8, flex: 1, alignItems: 'center' },
   saveText: { fontWeight: 'bold', color: '#000' },
   modalOverlay: {
     flex: 1,
@@ -693,7 +786,26 @@ const styles = StyleSheet.create({
     color: '#222',
     textAlign: 'center',
     marginBottom: 20,
-
+  },
+  confirmMessage: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 22,
+  },
+  discardButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#19d44c',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  discardButtonText: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
   },
 
   confirmButtons: {
@@ -852,5 +964,23 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     lineHeight: 22,
+  },
+  editingButtons: {
+    flexDirection: 'row',
+    width: '100%',
+    gap: 12,
+  },
+  cancelEditButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  cancelEditButtonText: {
+    fontSize: 16,
+    color: '#666',
+    fontWeight: '600',
   },
 });

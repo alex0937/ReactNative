@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
-import { auth } from '../src/config/firebaseConfig';
+import { auth, db } from '../src/config/firebaseConfig';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import CustomAlertModal from '../components/CostomAlertModal';
 
 export default function SignUp({ navigation }) {
@@ -103,9 +104,28 @@ export default function SignUp({ navigation }) {
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Actualizar el perfil en Firebase Auth
       await updateProfile(userCredential.user, {
         displayName: firstName + " " + lastName,
       });
+
+      // Crear el documento del usuario en Firestore
+      const userDocRef = doc(db, 'users', userCredential.user.uid);
+      await setDoc(userDocRef, {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: '',
+        address: '',
+        birthDate: '',
+        gender: '',
+        dni: '',
+        photoURL: null,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      
       showCustomAlert("¡Registro Exitoso!✅", "Tu cuenta ha sido creada. ¡Bienvenido a ADN-FIT GYM!", "success");
       navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
     } catch (error) {

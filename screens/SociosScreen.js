@@ -146,7 +146,7 @@ export default function SociosScreen({ navigation }) {
           style={styles.editButton} 
           onPress={() => handleEditSocio(item)}
         >
-          <Ionicons name="create-outline" size={16} color="#4A90E2" />
+          <Ionicons name="create-outline" size={16} color="#19d44c" />
           <Text style={styles.editText}>Editar</Text>
         </TouchableOpacity>
         <TouchableOpacity 
@@ -243,7 +243,7 @@ export default function SociosScreen({ navigation }) {
             style={styles.menuButton}
             onPress={() => navigation?.openDrawer?.()}
           >
-            <Ionicons name="menu-outline" size={24} color="#2C3E50" />
+            <Ionicons name="menu-outline" size={24} color="#19d44c" />
           </TouchableOpacity>
           <Text style={styles.title}>Gestión de Socios</Text>
           <View style={styles.placeholder} />
@@ -275,9 +275,9 @@ export default function SociosScreen({ navigation }) {
         style={styles.registerButton}
         onPress={() => setShowRegisterModal(true)}
       >
-        <Ionicons name="add-circle-outline" size={20} color="#4A90E2" />
+        <Ionicons name="add-circle-outline" size={20} color="#19d44c" />
         <Text style={styles.registerButtonText}>Registrar Nuevo Socio</Text>
-        <Ionicons name="chevron-down-outline" size={20} color="#4A90E2" />
+        <Ionicons name="chevron-down-outline" size={20} color="#19d44c" />
       </TouchableOpacity>
 
       {/* Barra de búsqueda */}
@@ -377,11 +377,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F9FA',
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#2C3E50',
+    color: '#19d44c',
     flex: 1,
-    textAlign: 'center',
+    textAlign: 'center'
+    ,
   },
   placeholder: {
     width: 40, // Para mantener el título centrado
@@ -436,7 +437,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 12,
     fontSize: 16,
-    color: '#4A90E2',
+    color: '#19d44c',
     fontWeight: '500',
   },
   searchContainer: {
@@ -487,8 +488,8 @@ const styles = StyleSheet.create({
     borderColor: '#E9ECEF',
   },
   selectedFilter: {
-    backgroundColor: '#4A90E2',
-    borderColor: '#4A90E2',
+    backgroundColor: '#19d44c',
+    borderColor: '#19d44c',
   },
   filterButtonText: {
     fontSize: 14,
@@ -610,7 +611,7 @@ const styles = StyleSheet.create({
   editText: {
     marginLeft: 4,
     fontSize: 14,
-    color: '#4A90E2',
+    color: '#19d44c',
     fontWeight: '500',
   },
   deleteButton: {
