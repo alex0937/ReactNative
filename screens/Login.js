@@ -31,7 +31,7 @@ export default function Login({ navigation }) {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      showCustomAlert('⚠️Error', 'Por favor ingresa tu correo y contraseña.');
+      showCustomAlert('⚠️Error', 'Por favor complete ambos campos.');
       return;
     }
     if (!validateEmail(email)) {
@@ -41,8 +41,11 @@ export default function Login({ navigation }) {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       showCustomAlert('¡Bienvenido a ADN-FIT GYM!', 'Has iniciado sesión exitosamente.');
-      /* ⬇⬇⬇⬇⬇  CAMBIO CLAVE  ⬇⬇⬇⬇⬇ */
-      navigation.replace('Main'); // ← va al TabNavigator (Home + barra)
+  
+      // Esperar 2 segundos antes de navegar para que el usuario pueda leer el mensaje
+      setTimeout(() => {
+        navigation.replace('Main');
+      }, 2000);
     } catch (error) {
       let errorMessage = 'Hubo un problema al iniciar sesión. Intenta de nuevo.';
       switch (error.code) {

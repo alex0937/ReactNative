@@ -78,7 +78,7 @@ export default function Home({ navigation }) {
     {
       title: '🚀 Nuestra Visión',
       content: 'Ser el gimnasio líder en innovación y experiencia personalizada para cada socio.',
-      colors: ['#4facfe', '#00f2fe'],
+      colors: ['#acc4d8ff', '#0a7176ff'],
       icon: 'trophy-outline'
     },
     {

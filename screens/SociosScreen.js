@@ -22,6 +22,14 @@ export default function SociosScreen({ navigation }) {
   const [selectedFilter, setSelectedFilter] = useState('Todos');
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [socioToDelete, setSocioToDelete] = useState(null);
+  const [formDataToUpdate, setFormDataToUpdate] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [editingSocio, setEditingSocio] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
 
@@ -30,35 +38,21 @@ export default function SociosScreen({ navigation }) {
     setFilteredSocios(filtered);
   }, [socios, searchText, selectedFilter]);
 
+  const showSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessModal(true);
+  };
+
+  const showError = (message) => {
+    setErrorMessage(message);
+    setShowErrorModal(true);
+  };
+
   const handleSubmitSocio = async (formData) => {
     if (editingSocio) {
-      // Mostrar confirmación antes de actualizar
-      Alert.alert(
-        'Confirmar actualización',
-        '¿Estás seguro de que quieres actualizar los datos de este socio?',
-        [
-          {
-            text: 'Cancelar',
-            style: 'cancel'
-          },
-          {
-            text: 'Actualizar',
-            onPress: async () => {
-              setFormLoading(true);
-              const result = await editSocio(editingSocio.id, formData);
-              setFormLoading(false);
-
-              if (result.success) {
-                showSuccessNotification('Actualizado', 'Socio actualizado correctamente');
-                setShowRegisterModal(false);
-                setEditingSocio(null);
-              } else {
-                showErrorNotification('Error', result.error || 'Ocurrió un error');
-              }
-            }
-          }
-        ]
-      );
+      // Guardar datos del formulario y mostrar modal de confirmación
+      setFormDataToUpdate(formData);
+      setShowUpdateModal(true);
     } else {
       // Para registrar nuevo socio (sin confirmación)
       setFormLoading(true);
@@ -66,35 +60,18 @@ export default function SociosScreen({ navigation }) {
       setFormLoading(false);
 
       if (result.success) {
-        showWelcomeNotification(formData.nombre);
+        showSuccess(`¡Bienvenido ${formData.nombre}!`);
         setShowRegisterModal(false);
         setEditingSocio(null);
       } else {
-        showErrorNotification('Error', result.error || 'Ocurrió un error');
+        showError(result.error || 'Ocurrió un error');
       }
     }
   };
 
   const handleDeleteSocio = (socio) => {
-    Alert.alert(
-      'Confirmar eliminación',
-      `¿Estás seguro de que deseas eliminar a ${socio.nombre}?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Eliminar',
-          style: 'destructive',
-          onPress: async () => {
-            const result = await removeSocio(socio.id);
-            if (result.success) {
-              showSuccessNotification('Eliminado', 'Socio eliminado correctamente');
-            } else {
-              showErrorNotification('Error', result.error || 'Error al eliminar el socio');
-            }
-          }
-        }
-      ]
-    );
+    setSocioToDelete(socio);
+    setShowDeleteModal(true);
   };
 
   const handleEditSocio = (socio) => {
@@ -112,7 +89,9 @@ export default function SociosScreen({ navigation }) {
       <View style={styles.socioInfo}>
         <View style={styles.avatarContainer}>
           <Image 
-            source={{ uri: `https://ui-avatars.com/api/?name=${item.nombre}&background=4A90E2&color=fff` }}
+            source={{ 
+              uri: item.photoURL || `https://ui-avatars.com/api/?name=${item.nombre}&background=4A90E2&color=fff` 
+            }}
             style={styles.avatar}
           />
           <View style={[
@@ -146,17 +125,103 @@ export default function SociosScreen({ navigation }) {
           style={styles.editButton} 
           onPress={() => handleEditSocio(item)}
         >
-          <Ionicons name="create-outline" size={16} color="#19d44c" />
           <Text style={styles.editText}>Editar</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.deleteButton} 
           onPress={() => handleDeleteSocio(item)}
         >
-          <Ionicons name="trash-outline" size={16} color="#FF6B6B" />
+          <Text style={styles.deleteText}>Eliminar</Text>
         </TouchableOpacity>
       </View>
     </View>
+  );
+
+  const UpdateModal = () => (
+    <Modal visible={showUpdateModal} transparent={true} animationType="fade">
+      <View style={styles.alertOverlay}>
+        <View style={styles.alertContent}>
+          <Text style={styles.alertMessage}>¿Estas seguro de actualizar los datos del socio?</Text>
+          <View style={styles.alertButtons}>
+            <TouchableOpacity style={styles.alertCancelButton} onPress={() => setShowUpdateModal(false)}>
+              <Text style={styles.alertCancelText}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.alertConfirmButton} onPress={async () => {
+              setShowUpdateModal(false);
+              setFormLoading(true);
+              const result = await editSocio(editingSocio.id, formDataToUpdate);
+              setFormLoading(false);
+              if (result.success) {
+                showSuccess('Socio actualizado correctamente');
+                setShowRegisterModal(false);
+                setEditingSocio(null);
+                setFormDataToUpdate(null);
+              } else {
+                showError(result.error || 'Ocurrió un error');
+              }
+            }}>
+              <Text style={styles.alertConfirmText}>Actualizar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  const DeleteModal = () => (
+    <Modal visible={showDeleteModal} transparent={true} animationType="fade">
+      <View style={styles.alertOverlay}>
+        <View style={styles.alertContent}>
+          <Text style={styles.alertMessage}>¿Deseas eliminar a {socioToDelete?.nombre}?</Text>
+          <View style={styles.alertButtons}>
+            <TouchableOpacity style={styles.alertCancelButton} onPress={() => {
+              setShowDeleteModal(false);
+              setSocioToDelete(null);
+            }}>
+              <Text style={styles.alertCancelText}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.alertConfirmButton} onPress={async () => {
+              setShowDeleteModal(false);
+              const result = await removeSocio(socioToDelete.id);
+              setSocioToDelete(null);
+              if (result.success) {
+                showSuccess('Socio eliminado correctamente');
+              } else {
+                showError(result.error || 'Error al eliminar el socio');
+              }
+            }}>
+              <Text style={styles.alertConfirmText}>Eliminar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  const SuccessModal = () => (
+    <Modal visible={showSuccessModal} transparent={true} animationType="fade">
+      <View style={styles.alertOverlay}>
+        <View style={styles.successContent}>
+          <Text style={styles.successMessage}>{successMessage}</Text>
+          <TouchableOpacity style={styles.successButton} onPress={() => setShowSuccessModal(false)}>
+            <Text style={styles.successButtonText}>Aceptar</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  const ErrorModal = () => (
+    <Modal visible={showErrorModal} transparent={true} animationType="fade">
+      <View style={styles.alertOverlay}>
+        <View style={styles.errorContent}>
+          <Text style={styles.errorMessage}>{errorMessage}</Text>
+          <TouchableOpacity style={styles.errorButton} onPress={() => setShowErrorModal(false)}>
+            <Text style={styles.errorButtonText}>OK</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
   );
 
   const FilterModal = () => (
@@ -318,7 +383,7 @@ export default function SociosScreen({ navigation }) {
 
       {/* Lista de Socios */}
       <View style={styles.sociosContainer}>
-        <Text style={styles.sectionTitle}>Socios Existentes</Text>
+        <Text style={styles.sectionTitle}>Socios</Text>
         {loading ? (
           <ActivityIndicator size="large" color="#4A90E2" style={styles.loader} />
         ) : (
@@ -340,6 +405,10 @@ export default function SociosScreen({ navigation }) {
       {/* Modales */}
       <RegisterModal />
       <FilterModal />
+      <UpdateModal />
+      <DeleteModal />
+      <SuccessModal />
+      <ErrorModal />
     </SafeAreaView>
   );
 }
@@ -614,6 +683,11 @@ const styles = StyleSheet.create({
     color: '#19d44c',
     fontWeight: '500',
   },
+  deleteText: {
+    fontSize: 14,
+    color: '#FF6B6B',
+    fontWeight: '500',
+  },
   deleteButton: {
     padding: 8,
   },
@@ -794,5 +868,100 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     fontWeight: '500',
+  },
+  // Estilos para modales de alerta
+  alertOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  alertContent: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 16,
+    width: 280,
+  },
+  alertMessage: {
+    fontSize: 16,
+    color: '#2C3E50',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  alertButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  alertCancelButton: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 6,
+    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+  },
+  alertCancelText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  alertConfirmButton: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 6,
+    backgroundColor: '#19d44c',
+    alignItems: 'center',
+  },
+  alertConfirmText: {
+    fontSize: 16,
+    color: '#fff',
+  },
+  // Estilos para modales de éxito y error
+  successContent: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 16,
+    width: 280,
+    alignItems: 'center',
+  },
+  successMessage: {
+    fontSize: 16,
+    color: '#121413ff',
+    textAlign: 'center',
+    marginBottom: 16,
+    fontWeight: '500',
+  },
+  successButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+    borderRadius: 6,
+    backgroundColor: '#27AE60',
+  },
+  successButtonText: {
+    fontSize: 16,
+    color: '#fff',
+  },
+  errorContent: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 16,
+    width: 280,
+    alignItems: 'center',
+  },
+  errorMessage: {
+    fontSize: 16,
+    color: '#E74C3C',
+    textAlign: 'center',
+    marginBottom: 16,
+    fontWeight: '500',
+  },
+  errorButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+    borderRadius: 6,
+    backgroundColor: '#E74C3C',
+  },
+  errorButtonText: {
+    fontSize: 16,
+    color: '#fff',
   },
 });

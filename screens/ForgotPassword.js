@@ -24,12 +24,12 @@ export default function ForgotPassword({ navigation }) {
 
   const handleResetPassword = async () => {
     if (!email) {
-      showCustomAlert('⚠️Error', 'Por favor ingresa tu correo electrónico.');
+      showCustomAlert('⚠️Error', 'Por favor ingresa su correo electrónico.');
       return;
     }
     try {
       await sendPasswordResetEmail(auth, email);
-      showCustomAlert('Éxito✅', 'Se ha enviado un correo para restablecer tu contraseña.');
+      showCustomAlert('Éxito✅', 'Se ha enviado un correo para restablecer la contraseña. Por favor, revise su bandeja de spam.');
       navigation.goBack();
     } catch (error) {
       let errorMessage = 'Ocurrió un error. Intenta de nuevo.';
@@ -56,7 +56,7 @@ export default function ForgotPassword({ navigation }) {
         <View style={styles.card}>
           <Text style={styles.title}>RECUPERAR CONTRASEÑA</Text>
           <Text style={styles.info}>
-            Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
+            Ingresa su correo electrónico y le enviaremos un enlace para restablecer la contraseña.
           </Text>
           <Text style={styles.label}>Correo Electrónico</Text>
           <View style={styles.inputContainer}>
@@ -75,7 +75,7 @@ export default function ForgotPassword({ navigation }) {
             <Text style={styles.buttonText}>ENVIAR</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backLink}>
-            <Text style={styles.backText}>Volver al inicio de sesión</Text>
+            <Text style={styles.backText}>¿Recordaste tu contraseña? Inicia sesión</Text>
           </TouchableOpacity>
           <CustomAlertModal
         visible={alertVisible}
@@ -199,6 +199,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 15,
     textAlign: 'center',
-    textDecorationLine: 'underline',
   },
 });

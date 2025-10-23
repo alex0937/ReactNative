@@ -132,7 +132,7 @@ export default function SignUp({ navigation }) {
       let errorMessage = "Hubo un problema al registrar el usuario. Por favor, intenta de nuevo.";
       switch (error.code) {
         case 'auth/email-already-in-use':
-          errorMessage = "⚠️Este correo electrónico ya está registrado.";
+          errorMessage = "⚠️Este correo electrónico ya está en uso.";
           break;
         case 'auth/invalid-email':
           errorMessage = "⚠️El formato del correo electrónico no es válido.";
@@ -141,7 +141,7 @@ export default function SignUp({ navigation }) {
           errorMessage = "⚠️La contraseña es demasiado débil.";
           break;
         case 'auth/network-request-failed':
-          errorMessage = "Problema de conexión a internet. Verifica tu red.";
+          errorMessage = "Problema de conexión a internet. Verifica el estado de tu red.";
           break;
         default:
           errorMessage = "Error desconocido. Por favor, contacta a soporte.";
