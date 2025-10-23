@@ -93,6 +93,8 @@ export default function DrawerNavigator() {
         name="Accesorios"
         component={AccesoriosScreen}
         options={{
+          headerShown: false,
+          drawerLabel: 'Accesorios',
           drawerIcon: ({ color }) => (
             <MaterialCommunityIcons name="dumbbell" size={20} color={color} />
           ),

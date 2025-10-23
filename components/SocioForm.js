@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {View,Text,TextInput,TouchableOpacity,ScrollView,StyleSheet,Alert,KeyboardAvoidingView,Platform,Dimensions,Modal,Image,ActivityIndicator} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
+import CustomAlertModal from '../components/CostomAlertModal';
 import { pickImageAsync, takePhotoAsync } from '../src/config/imagePicker';
 import { uploadToCloudinary } from '../src/config/uploadToCloudinary';
 
@@ -13,6 +14,14 @@ export default function SocioForm({
   onCancel, 
   loading = false 
 }) {
+
+   const showCustomAlert = (title, message, type = 'info') => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertType(type);
+    setAlertVisible(true);
+  };
+
   const [formData, setFormData] = useState({
     nombres: '',
     apellidos: '',
@@ -91,7 +100,7 @@ export default function SocioForm({
       };
       onSubmit(dataToSend);
     } else {
-      Alert.alert('Error', 'Por favor corrige los errores del formulario');
+      showCustomAlert('⚠️Error', 'Por favor complete los campos requeridos.');
     }
   };
 
@@ -118,7 +127,7 @@ export default function SocioForm({
 
     } catch (error) {
       console.error('Error al procesar imagen:', error);
-      Alert.alert('Error', 'No se pudo procesar la imagen');
+      showCustomAlert('⚠️Error', 'No se pudo procesar la imagen');
     } finally {
       setPhotoLoading(false);
     }

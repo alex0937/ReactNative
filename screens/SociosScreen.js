@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSocios } from '../src/hooks/useSocios';
 import SocioForm from '../components/SocioForm';
 import { showWelcomeNotification, showSuccessNotification, showErrorNotification } from '../src/utils/notifications';
+import CustomAlertModal from '../components/CostomAlertModal';
 
 export default function SociosScreen({ navigation }) {
   const { 

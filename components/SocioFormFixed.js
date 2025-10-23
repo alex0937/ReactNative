@@ -12,6 +12,7 @@ import {
   Dimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import CustomAlertModal from '../components/CostomAlertModal';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -29,6 +30,13 @@ export default function SocioForm({
     fechaNacimiento: '',
     tipoMembresia: 'Básica'
   });
+
+   const showCustomAlert = (title, message, type = 'info') => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertType(type);
+    setAlertVisible(true);
+  };
 
   const [errors, setErrors] = useState({});
 
@@ -70,7 +78,7 @@ export default function SocioForm({
     if (validateForm()) {
       onSubmit(formData);
     } else {
-      Alert.alert('Error', 'Por favor corrige los errores del formulario');
+      showCustomAlert('Error', 'Por favor corrige los errores del formulario');
     }
   };
 
