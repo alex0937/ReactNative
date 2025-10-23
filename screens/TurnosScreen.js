@@ -8,16 +8,6 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const horasDisponibles = [
-  '08:00','09:00','10:00','11:00','12:00',
-  '15:00','16:00','17:00','18:00','19:00','20:00'
-];
-
-const ESTADOS = {
-  PENDIENTE : { label: 'Pendiente',  color: '#FF9500' },
-  CONFIRMADO: { label: 'Confirmado', color: '#34C759' },
-};
-
 export default function TurnosScreen() {
   const navigation = useNavigation();
 
@@ -64,13 +54,6 @@ export default function TurnosScreen() {
       { text: 'Borrar', onPress: () => setTurnos(turnos.filter(t => t.id !== id)) },
     ]);
 
-  const cambiarEstado = id =>
-    setTurnos(turnos.map(t =>
-      t.id === id
-        ? { ...t, estado: t.estado === 'PENDIENTE' ? 'CONFIRMADO' : 'PENDIENTE' }
-        : t
-    ));
-
   const seleccionarTurno = item => {
     setSocio(item.socio); setFecha(item.fecha); setHora(item.hora);
     setIdEditando(item.id); setModo('edicion');
@@ -79,9 +62,30 @@ export default function TurnosScreen() {
   const onChangeDate = (event, selected) => {
     setShowDate(false);
     if (selected) {
-      const iso = selected.toISOString().split('T')[0]; // yyyy-mm-dd
+      const iso = selected.toISOString().split('T')[0];
       setFecha(iso);
+      setHora(''); // reseteamos hora por si acaso
     }
+  };
+
+  /* ----------  HELPERS  ---------- */
+  const esHoy = (fechaISO) => {
+    const hoy = new Date().toISOString().split('T')[0];
+    return fechaISO === hoy;
+  };
+
+  const getHorasDisponibles = () => {
+    const ahora = new Date();
+    const horaActual = ahora.getHours();
+    const todas = [
+      '08:00','09:00','10:00','11:00','12:00',
+      '15:00','16:00','17:00','18:00','19:00','20:00'
+    ];
+    if (!esHoy(fecha)) return todas;
+    return todas.filter(h => {
+      const [hh] = h.split(':').map(Number);
+      return hh > horaActual;
+    });
   };
 
   /* ----------  HEADER  ---------- */
@@ -124,9 +128,10 @@ export default function TurnosScreen() {
           />
         )}
 
+        {/* HORAS FILTRADAS SI ES HOY */}
         <Text style={styles.label}>Hora</Text>
         <View style={styles.horaWrap}>
-          {horasDisponibles.map(h => (
+          {getHorasDisponibles().map(h => (
             <TouchableOpacity
               key={h}
               onPress={() => setHora(h)}
