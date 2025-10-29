@@ -24,6 +24,10 @@ export default function PerfilScreen({ navigation }) {
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
+
+  // Estados para almacenar valores originales y detectar cambios
+  const [originalData, setOriginalData] = useState({});
+  const [hasChanges, setHasChanges] = useState(false);
   const [showGenderModal, setShowGenderModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -45,14 +49,29 @@ export default function PerfilScreen({ navigation }) {
         
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          setFirstName(userData.firstName || '');
-          setLastName(userData.lastName || '');
-          setPhone(userData.phone || '');
-          setAddress(userData.address || '');
-          setBirthDate(userData.birthDate || '');
-          setGender(userData.gender || '');
-          setDni(userData.dni || '');
-          setPhotoURL(userData.photoURL || user.photoURL || null);
+          const profileData = {
+            firstName: userData.firstName || '',
+            lastName: userData.lastName || '',
+            phone: userData.phone || '',
+            address: userData.address || '',
+            birthDate: userData.birthDate || '',
+            gender: userData.gender || '',
+            dni: userData.dni || '',
+            photoURL: userData.photoURL || user.photoURL || null
+          };
+          
+          // Establecer los datos actuales
+          setFirstName(profileData.firstName);
+          setLastName(profileData.lastName);
+          setPhone(profileData.phone);
+          setAddress(profileData.address);
+          setBirthDate(profileData.birthDate);
+          setGender(profileData.gender);
+          setDni(profileData.dni);
+          setPhotoURL(profileData.photoURL);
+          
+          // Guardar datos originales para comparar cambios
+          setOriginalData(profileData);
         } else {
           const initialData = {
             firstName: '',
@@ -69,6 +88,19 @@ export default function PerfilScreen({ navigation }) {
           };
           
           await setDoc(userDocRef, initialData);
+          
+          // Establecer datos originales para documento nuevo
+          const profileData = {
+            firstName: '',
+            lastName: '',
+            phone: '',
+            address: '',
+            birthDate: '',
+            gender: '',
+            dni: '',
+            photoURL: user.photoURL || null
+          };
+          setOriginalData(profileData);
         }
       } catch (error) {
         Alert.alert('⚠️ Error', 'No se pudo cargar el perfil del usuario');
@@ -101,6 +133,33 @@ export default function PerfilScreen({ navigation }) {
       return () => clearTimeout(timer);
     }
   }, [showPhotoSuccessModal]);
+
+  // Función para detectar cambios en los datos
+  const checkForChanges = () => {
+    const currentData = {
+      firstName,
+      lastName,
+      phone,
+      address,
+      birthDate,
+      gender,
+      dni,
+      photoURL
+    };
+    
+    const hasDataChanged = Object.keys(currentData).some(
+      key => currentData[key] !== originalData[key]
+    );
+    
+    setHasChanges(hasDataChanged);
+  };
+
+  // Ejecutar verificación de cambios cuando cambien los datos
+  useEffect(() => {
+    if (Object.keys(originalData).length > 0) {
+      checkForChanges();
+    }
+  }, [firstName, lastName, phone, address, birthDate, gender, dni, photoURL, originalData]);
 
   const handlePickImage = async (fromCamera = false) => {
   try {
@@ -156,18 +215,36 @@ export default function PerfilScreen({ navigation }) {
   };
 
   const handleSaveClick = () => {
+    if (!hasChanges) {
+      Alert.alert('Sin cambios', 'No hay modificaciones para guardar');
+      return;
+    }
     if (!validateForm()) return;
     setShowConfirmModal(true);
   };
 
   const handleCancelEdit = () => {
-    setShowCancelModal(true);
+    if (hasChanges) {
+      setShowCancelModal(true);
+    } else {
+      setEditing(false);
+    }
   };
 
   const handleConfirmCancel = () => {
     setShowCancelModal(false);
     setEditing(false);
-    // Opcional: Recargar datos originales si quieres descartar cambios
+    
+    // Restaurar datos originales
+    setFirstName(originalData.firstName || '');
+    setLastName(originalData.lastName || '');
+    setPhone(originalData.phone || '');
+    setAddress(originalData.address || '');
+    setBirthDate(originalData.birthDate || '');
+    setGender(originalData.gender || '');
+    setDni(originalData.dni || '');
+    setPhotoURL(originalData.photoURL || null);
+    setHasChanges(false);
   };
 
   const handleConfirmSave = async () => {
@@ -195,6 +272,21 @@ export default function PerfilScreen({ navigation }) {
       
       if (success) {
         setEditing(false);
+        
+        // Actualizar datos originales con los nuevos valores guardados
+        const newOriginalData = {
+          firstName,
+          lastName,
+          phone,
+          address,
+          birthDate,
+          gender,
+          dni,
+          photoURL
+        };
+        setOriginalData(newOriginalData);
+        setHasChanges(false);
+        
         console.log('✅ Perfil guardado exitosamente, mostrando modal...');
         // Pequeño delay para asegurar que el modal se muestre correctamente
         setTimeout(() => {
@@ -392,11 +484,23 @@ export default function PerfilScreen({ navigation }) {
             {editing ? (
               <View style={styles.editingButtons}>
                 <TouchableOpacity
-                  style={styles.saveButton}
+                  style={[
+                    styles.saveButton, 
+                    !hasChanges && styles.disabledSaveButton
+                  ]}
                   onPress={handleSaveClick}
-                  disabled={loading}
+                  disabled={loading || !hasChanges}
                 >
-                  {loading ? <ActivityIndicator color="#000" /> : <Text style={styles.saveText}>Guardar</Text>}
+                  {loading ? (
+                    <ActivityIndicator color={hasChanges ? "#000" : "#999"} />
+                  ) : (
+                    <Text style={[
+                      styles.saveText,
+                      !hasChanges && styles.disabledSaveText
+                    ]}>
+                      {hasChanges ? 'Guardar' : 'Sin cambios'}
+                    </Text>
+                  )}
                 </TouchableOpacity>
                 
                 <TouchableOpacity
@@ -474,6 +578,9 @@ export default function PerfilScreen({ navigation }) {
           <View style={styles.confirmModalContent}>
             
             <Text style={styles.confirmTitle}>¿Deseas actualizar tus datos?</Text>
+            <Text style={styles.confirmMessage}>
+              Se guardarán las modificaciones realizadas en tu perfil.
+            </Text>
             
             
             <View style={styles.confirmButtons}>
@@ -710,6 +817,8 @@ const styles = StyleSheet.create({
   editText: { fontWeight: 'bold', color: '#000' },
   saveButton: { backgroundColor: '#19d44c', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 8, flex: 1, alignItems: 'center' },
   saveText: { fontWeight: 'bold', color: '#000' },
+  disabledSaveButton: { backgroundColor: '#e0e0e0', opacity: 0.6 },
+  disabledSaveText: { color: '#999' },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.7)',

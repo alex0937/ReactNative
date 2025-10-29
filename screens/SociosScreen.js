@@ -60,7 +60,7 @@ export default function SociosScreen({ navigation }) {
       setFormLoading(false);
 
       if (result.success) {
-        showSuccess(`¡Bienvenido ${formData.nombre}!`);
+        showSuccess(`Socio ${formData.nombre} registrado correctamente`);
         setShowRegisterModal(false);
         setEditingSocio(null);
       } else {

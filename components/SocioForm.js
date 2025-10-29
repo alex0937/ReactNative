@@ -29,6 +29,8 @@ export default function SocioForm({
   const [errors, setErrors] = useState({});
   const [showGenderModal, setShowGenderModal] = useState(false);
   const [photoLoading, setPhotoLoading] = useState(false);
+  const [originalData, setOriginalData] = useState({});
+  const [hasChanges, setHasChanges] = useState(false);
 
   const genderOptions = ['Masculino', 'Femenino', 'Otro', 'Prefiero no decir'];
 
@@ -40,7 +42,7 @@ export default function SocioForm({
       const nombres = partesNombre.slice(0, Math.ceil(partesNombre.length / 2)).join(' ');
       const apellidos = partesNombre.slice(Math.ceil(partesNombre.length / 2)).join(' ');
       
-      setFormData({
+      const initialData = {
         nombres: socio.nombres || nombres || '',
         apellidos: socio.apellidos || apellidos || '',
         genero: socio.genero || '',
@@ -51,9 +53,22 @@ export default function SocioForm({
         tipoMembresia: socio.tipoMembresia || 'Básica',
         estado: socio.estado || 'Activo',
         photoURL: socio.photoURL || ''
-      });
+      };
+      
+      setFormData(initialData);
+      setOriginalData(initialData);
     }
   }, [socio]);
+
+  // Detectar cambios comparando formData con originalData
+  useEffect(() => {
+    if (socio && Object.keys(originalData).length > 0) {
+      const hasDataChanged = Object.keys(formData).some(
+        key => formData[key] !== originalData[key]
+      );
+      setHasChanges(hasDataChanged);
+    }
+  }, [formData, originalData, socio]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -83,6 +98,12 @@ export default function SocioForm({
   };
 
   const handleSubmit = () => {
+    // Verificar si hay cambios solo en modo edición
+    if (socio && !hasChanges) {
+      Alert.alert('Sin cambios', 'No hay modificaciones para guardar');
+      return;
+    }
+    
     if (validateForm()) {
       // Combinar nombres y apellidos para compatibilidad
       const dataToSend = {
@@ -90,8 +111,6 @@ export default function SocioForm({
         nombre: `${formData.nombres} ${formData.apellidos}`.trim()
       };
       onSubmit(dataToSend);
-    } else {
-      Alert.alert('Error', 'Por favor corrige los errores del formulario');
     }
   };
 
@@ -328,12 +347,16 @@ export default function SocioForm({
         </TouchableOpacity>
         
         <TouchableOpacity
-          style={[styles.submitButton, loading && styles.disabledButton]}
+          style={[
+            styles.submitButton, 
+            (loading || (socio && !hasChanges)) && styles.disabledButton
+          ]}
           onPress={handleSubmit}
-          disabled={loading}
+          disabled={loading || (socio && !hasChanges)}
         >
           <Text style={styles.submitButtonText}>
-            {loading ? 'Guardando...' : (socio ? 'Actualizar' : 'Registrar')}
+            {loading ? 'Guardando...' : 
+             socio ? (hasChanges ? 'Actualizar' : 'Sin cambios') : 'Registrar'}
           </Text>
         </TouchableOpacity>
       </View>
